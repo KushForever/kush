@@ -1172,6 +1172,8 @@ body[data-screen="s-home"] .top .logo{visibility:hidden}
 .pl-facts dd{font-weight:600;font-variant-numeric:tabular-nums}
 .placedlg h4{font-size:15px;font-weight:600;margin:18px 0 6px}
 .pl-note{max-width:60ch}
+.pl-dish{margin:.2em 0 .6em;padding-left:1.1em;max-width:60ch}.pl-dish li{margin:.25em 0}.pl-dish li::marker{color:var(--cat,currentColor)}
+.pdish{margin:.35em 0 0;font-size:.86em;opacity:.9}.pdish b{font-weight:600}
 .pl-why{list-style:none;display:flex;flex-direction:column;gap:6px}
 .pl-why li{padding-left:16px;position:relative}
 .pl-why li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;background:var(--neon)}
@@ -1690,6 +1692,35 @@ const CU_NAME={jp:"японская кухня и суши",cn:"китайска
 const CU_TAGS=Object.keys(CU_KW);
 // «суши» и «китайская» — это тоже азиатская кухня, но не наоборот
 const cuHit=(p,want)=>(p.cu||[]).filter(c=>want.includes(c)).length;
+// «Что взять»: фирменные позиции, только из обзоров и меню (restoclub, sobaka.ru, fontanka и др.)
+const DISHES={
+ mio:["Negroni Torre — башня из трёх негрони","салями с трюфелем на крепах (завтраки до 13:00)"],
+ mansarda:["сашими из лосося и гребешка","чёрная икра с оладьями","чёрная треска"],
+ schastye:["десерты французского шефа-кондитера","макаруны на палочках"],
+ rybalka:["рыба, которую поймаете сами: копчёная на ольхе, на гриле или уха","чай из самовара с тремя вареньями"],
+ karlfriedrich:["домашние колбаски","свиная рулька","пиво собственной пивоварни"],
+ meatcoin:["«Стейки 24 карата» в съедобном золоте","мясные суши","острый тартар"],
+ futurist:["бриошь с чёрной икрой и шампанским на завтрак","стейк с хашбраунами"],
+ reborn:["сырный крокет с тартаром из мраморной говядины и трюфелем — самый популярный","шатобриан с костным мозгом"],
+ shalyapin:["котлеты (их в меню 12 видов, от щучьих до мраморных)","рассольник с куриной печенью","филе стерляди с тёплым винегретом"],
+ marivanna:["оливье и соленья","пирожки и блины","самогонный сет в баре"],
+ chabrets:["чайханский плов с ягнёнком","праздничный плов с мраморной говядиной (пт–вс)","лагман"],
+ terrassa:["суши и димсамы с видом на Казанский собор","цыплёнок табака или кутабы"],
+ percorso:["итальянский воскресный семейный обед (вс днём)"],
+ flori:["флорентийский стейк","ризотто с говядиной и чёрным трюфелем","баскский чизкейк"],
+ joli:["сосиска в тесте из своей пекарни","морепродукты по-средиземноморски"],
+ ming:["утка по-пекински — главный эксклюзив шефа"],
+ jidai:["тартар из тунца блюфин с такуаном","хэндролл абури с вагю и фуа-гра","угорь с фуа-гра"],
+ bistroteka:["гребешки с шиитаке и кунжутным соусом","крудо из тунца с красным апельсином"],
+ rimski:["карпаччо из говядины","пицца","салат с тёплым угрём, манго и авокадо"],
+ siesta:["тартар из тунца","стейк с луковым пюре","орекьетте с рагу из кролика"],
+ kidosuv:["роллы и суши у открытой стойки","лапша и том ям"],
+ kidozel:["роллы и суши у открытой стойки","лапша и том ям"],
+ medici:["пицца","паста с трюфельным соусом"],
+ lorenzo:["пицца","паста"],
+ mamatata:["хинкали и шашлык","домашние настойки"]
+};
+const dishesOf=p=>p&&DISHES[p.id]||null;
 const CHAINS={
   kido:{name:"КИDO",ids:["kidosuv","kidozel"]},
   pot1:{name:"Гончарная студия №1",ids:["pot1nevsky","pot1transp","pot1zagor","pot1razezh","pot1kima","pot1optikov","pot1nauki"]},
@@ -2172,7 +2203,7 @@ function renderRoute(animate){
     if(c&&["ok","shift","selfok","sent"].includes(c.status))badge='<span class="badge need">Забронировано</span>';
     if(c&&c.status==="prepay")badge='<span class="badge">Ждёт депозита</span>';
     out+='<li style="--i:'+(k++)+';--cat:var(--c-'+x.p.type+')"><article class="stop" data-open="'+i+'" tabindex="0" role="button" aria-label="Подробнее: '+esc(x.p.name)+'"><div class="cover" data-pid="'+esc(x.p.id)+'">'+cover(x.p,i)+'<span class="n">'+(i+1)+'</span><span class="time">'+hm(x.arrive)+'–'+hm(x.end)+'</span></div>'+
-      '<div class="body"><h3>'+esc(x.p.name)+'</h3><p class="meta"><span class="cat">'+TYPES[x.p.type]+'</span>, '+durTxt(x.end-x.arrive)+'</p><p class="addr">'+esc(x.p.area)+'</p>'+(x.p.note?'<p class="pnote">'+esc(x.p.note)+'</p>':'')+branchHTML(x.p,i)+
+      '<div class="body"><h3>'+esc(x.p.name)+'</h3><p class="meta"><span class="cat">'+TYPES[x.p.type]+'</span>, '+durTxt(x.end-x.arrive)+'</p><p class="addr">'+esc(x.p.area)+'</p>'+(x.p.note?'<p class="pnote">'+esc(x.p.note)+'</p>':'')+(dishesOf(x.p)?'<p class="pdish"><b>Что взять:</b> '+esc(dishesOf(x.p)[0])+'</p>':'')+branchHTML(x.p,i)+
       '<div class="foot">'+badge+'<button class="link" data-swap="'+i+'">Заменить</button></div></div></article></li>';
   });
   $("#timeline").innerHTML=out;
@@ -2299,6 +2330,7 @@ function placeDialog(p,x,i){
     '<p class="pl-addr">'+esc(p.area)+'</p>'+
     '<dl class="pl-facts"><div><dt>'+(inRoute?"В маршруте":"Что это")+'</dt><dd>'+(inRoute?hm(x.arrive)+'–'+hm(x.end):TYPES[p.type])+'</dd></div><div><dt>Часы работы</dt><dd>'+esc(p.open)+'–'+esc(p.close)+'</dd></div><div><dt>Бронь</dt><dd>'+book+'</dd></div></dl>'+
     (p.note?'<h4>Что это за место</h4><p class="pl-note">'+esc(p.note.charAt(0).toUpperCase()+p.note.slice(1))+'.</p>':'')+
+    (dishesOf(p)?'<h4>Что взять</h4><ul class="pl-dish">'+dishesOf(p).map(d=>'<li>'+esc(d)+'</li>').join('')+'</ul>':'')+
     (why.length?'<h4>Почему мы его выбрали</h4><p class="pl-type" id="plType"></p>':'')+
     '<div id="plVip">'+vipHTML(p)+'</div>'+
     '<div class="pl-act">'+placeLinks(p)+'</div>'+
