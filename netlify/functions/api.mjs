@@ -112,9 +112,9 @@ async function onBooking(body) {
   for (const it of items) {
     const phone = cut(it.phone, 24);
     const body2 =
-      `<b>${esc(cut(it.name, 60))}</b>\n` +
+      `<b><i>${esc(cut(it.name, 60))}</i></b>\n` +
       `${esc(cut(it.area, 80))}\n` +
-      `На ${esc(cut(it.time, 10))}, ${n} чел., на имя ${esc(cut(u.name || "гость", 40))}\n` +
+      `<b>Бронь на ${esc(cut(it.time, 10))}</b>, ${n} чел., на имя ${esc(cut(u.name || "гость", 40))}\n` +
       // телефон отдельной строкой без скобок: Telegram сам сделает его кнопкой вызова
       (phone ? esc(phone.replace(/[^\d+]/g, "")) : `Телефона в базе нет`);
     await tg("sendMessage", {
@@ -265,16 +265,19 @@ async function onWebhook(req, body) {
 
     if (kind === "bk" && isAdmin) {
       const done = act === "ok";
-      const title = cq.message && cq.message.text ? cq.message.text.split("\n")[0] : "место";
+      const lines = cq.message && cq.message.text ? cq.message.text.split("\n") : [];
+      const title = lines[0] || "место";
+      const tm = (/Бронь на (\d{1,2}:\d{2})/.exec(lines.join("\n")) || [])[1] || "";
+      const place = `<b><i>${esc(title)}</i></b>` + (tm ? ` — <b>${esc(tm)}</b>` : "");
       await tg("answerCallbackQuery", { callback_query_id: cq.id, text: done ? "Отметил: забронировано" : "Отметил: не вышло" });
-      if (cq.message) await tg("editMessageText", { chat_id: chat, message_id: cq.message.message_id, text: cq.message.text + "\n\n" + (done ? "Забронировано" : "Не получилось") });
+      if (cq.message) await tg("editMessageText", { chat_id: chat, message_id: cq.message.message_id, text: cq.message.text + "\n\n" + (done ? "✅ Забронировано" : "❌ Не получилось"), entities: cq.message.entities || undefined });
       if (gid && gid !== "0") {
         await tg("sendMessage", {
           chat_id: gid,
           parse_mode: "HTML",
           text: done
-            ? `<b>Бронь подтверждена</b>\n${esc(title)}\nЖдут тебя, хорошего вечера.`
-            : `<b>Не получилось</b>\n${esc(title)}: мест нет. Открой KUSH и выбери замену, это полминуты.`,
+            ? `✅ <b>Бронь подтверждена</b>\n\n${place}\n\nЖдут тебя. Хорошего вечера!`
+            : `😔 <b>Не получилось</b>\n\n${place}\nМест нет. Открой KUSH и выбери замену, это полминуты.`,
           reply_markup: done ? undefined : { inline_keyboard: [[{ text: "Открыть KUSH", web_app: { url: base } }]] },
         });
       }
@@ -309,11 +312,18 @@ async function onWebhook(req, body) {
 
   // команды
   if (cmd === "/start" || cmd === "/menu") {
-    const hi = isAdmin ? "Привет. Сюда приходят регистрации, заявки на бронь и вопросы гостей." : `Привет, ${esc(userName(msg.from))}.`;
+    const text = isAdmin
+      ? `👋 Привет, ${esc(userName(msg.from))}!\n\nЭто пульт KUSH. Сюда приходят регистрации, заявки на бронь и вопросы гостей. Чтобы ответить гостю, жми «Ответить» под его сообщением.`
+      : `👋 <b>Привет, ${esc(userName(msg.from))}!</b>\n\n` +
+        `Я KUSH, твой гид по вечернему Питеру. Скажи, с кем идёшь, во сколько и на какой бюджет, и я соберу вечер за минуту:\n\n` +
+        `🍽 рестораны, бары, бани и спа, шоу и прогулки рядом друг с другом\n` +
+        `💸 средний чек каждого места и что там взять\n` +
+        `📞 брони возьмём на себя, подтверждение придёт сюда\n\n` +
+        `Жми <b>«Собрать маршрут»</b>, четыре вопроса, и вечер готов ✨`;
     await tg("sendMessage", {
       chat_id: chat,
       parse_mode: "HTML",
-      text: `${hi}\n\n<b>KUSH</b> собирает маршрут по Питеру на сегодня: под твою компанию, время и бюджет. А брони можем взять на себя.`,
+      text,
       reply_markup: startKeyboard(base),
     });
     return json({ ok: true });
@@ -386,7 +396,7 @@ async function onSetup(url) {
   const cmds = await tg("setMyCommands", { commands: pub });
   if (ADMIN) await tg("setMyCommands", { commands: [...pub, { command: "myid", description: "Мой chat id" }], scope: { type: "chat", chat_id: Number(ADMIN) } });
   const desc = await tg("setMyDescription", {
-    description: "KUSH подбирает, куда сходить в Питере сегодня: рестораны, бары, клубы, шоу и прогулки под твою компанию, время и бюджет. А брони берёт на себя.\n\nНажми «Запустить», чтобы начать.",
+    description: "👋 Привет! Я KUSH — гид по вечернему Питеру.\n\n🍽 Соберу маршрут на сегодня: рестораны, бары, бани и спа, шоу и прогулки рядом друг с другом.\n💸 Покажу средний чек и что взять.\n📞 Брони возьмём на себя.\n\nЖми «Старт» и поехали ✨",
   });
   await tg("setMyShortDescription", { short_description: "Маршрут по Питеру на сегодня и брони без звонков. Сотрудничество: " + PARTNER_MAIL });
   return json({

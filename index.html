@@ -1166,7 +1166,7 @@ body[data-screen="s-home"] .top .logo{visibility:hidden}
 .pl-cat{font-size:14px;font-weight:600}
 .placedlg h3{font-family:var(--font-display);font-size:clamp(24px,4vw,30px);line-height:1.1;margin:4px 0 6px}
 .pl-addr{color:var(--muted)}
-.pl-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:16px 0 4px}
+.pl-facts{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:16px 0 4px}
 .pl-facts div{background:var(--panel);padding:10px 12px}
 .pl-facts dt{font-size:12px;color:var(--muted)}
 .pl-facts dd{font-weight:600;font-variant-numeric:tabular-nums}
@@ -1451,7 +1451,7 @@ body[data-screen="s-reg"] .foot-note .link,body[data-screen="s-home"] .foot-note
    area      — район или улица (видно в карточке)
    lat, lon  — координаты (Яндекс Карты: правый клик по точке → «Что здесь?»)
    minutes   — сколько времени там проводят
-   check     — средний чек на человека, ₽. На сайте НЕ показывается, нужен только чтобы уложиться в бюджет
+   check     — средний чек на человека, ₽. Показывается на карточках и нужен, чтобы уложиться в бюджет
    open, close — часы работы "ЧЧ:ММ". Если закрывается после полуночи, так и пишем: "02:00". Круглосуточно: "00:00","00:00"
    booking   — нужна ли бронь, бот звонит (true / false)
    tickets   — true: билеты покупаются онлайн, бот не звонит
@@ -1498,6 +1498,32 @@ const KUSH_PLACES=[
   {"id": "okhta", "kw": ["охта", "лыж", "горнолыж", "сноуборд"], "pick": true, "name": "Охта Парк", "type": "active", "area": "Мистолово, за городом", "lat": 60.08000, "lon": 30.46000, "far": true, "trip": 45, "minutes": 240, "check": 3000, "open": "10:00", "close": "22:00", "booking": false, "phone": "+7 (812) 389-29-99", "who": ["friends", "date", "solo"], "maxGroup": 25, "note": "склоны, каток, верёвочный парк, бассейн", "photo": ""},
   {"id": "igora", "kw": ["игор", "лыж", "горнолыж", "сноуборд"], "pick": true, "name": "Курорт «Игора»", "type": "active", "area": "Приозерское шоссе, 54 км", "lat": 60.38000, "lon": 30.37000, "far": true, "trip": 75, "minutes": 300, "check": 4000, "open": "10:00", "close": "22:00", "booking": false, "phone": "+7 (812) 960-00-55", "who": ["friends", "date", "solo"], "maxGroup": 25, "note": "лучшие склоны области, едем на целый день", "photo": ""},
   {"id": "xclinic", "kw": ["клиник", "x-clinic", "икс клиник", "репино"], "pick": true, "name": "X-Clinic в Репино", "type": "relax", "area": "Репино, Приморское шоссе, 426", "lat": 60.17000, "lon": 29.86000, "far": true, "trip": 55, "minutes": 180, "check": 15000, "open": "10:00", "close": "21:00", "booking": true, "unit": "SPA-программу", "who": ["date", "solo"], "maxGroup": 4, "note": "медицинский SPA, бассейн на крыше с видом на залив", "photo": ""},
+  {"pick": true, "photo": "", "id": "aquariviera", "kw": ["аква ривьер", "акваривьер", "ривьер"], "name": "Велнес-клуб «Аква Ривьера»", "type": "relax", "area": "Репино, Приморское шоссе, 394 к1", "lat": 60.1712, "lon": 29.8695, "far": true, "trip": 50, "minutes": 180, "check": 3500, "open": "08:00", "close": "23:00", "booking": true, "phone": "+7 (931) 955-15-51", "unit": "посещение", "who": ["date", "friends", "solo"], "maxGroup": 10, "note": "два 25-метровых бассейна, крытый с выплывом в открытый с подогревом круглый год, комплекс бань и терраса с видом на залив"},
+  {"pick": true, "photo": "", "id": "voda", "kw": ["вода", "voda", "акваклуб"], "name": "Акваклуб VODA", "type": "relax", "area": "Курортный район, Приморское шоссе, 256А", "lat": 60.0835, "lon": 29.9555, "far": true, "trip": 40, "minutes": 180, "check": 4000, "open": "10:00", "close": "23:00", "booking": true, "phone": "+7 (812) 767-38-59", "unit": "посещение", "who": ["date", "friends", "solo"], "maxGroup": 12, "note": "большой спа-комплекс у Финского залива: спа-бассейн, хаммам, сауна, в цене полотенце и халат, есть ресторан Mizu"},
+  {"pick": true, "photo": "", "id": "zolruchey", "kw": ["золотой руч", "золотого руч"], "name": "«Золотой Ручей»", "type": "relax", "area": "Сестрорецк, Заречная дорога, 19", "lat": 60.1007, "lon": 29.9713, "far": true, "trip": 40, "minutes": 180, "check": 5000, "open": "00:00", "close": "00:00", "booking": true, "phone": "+7 (812) 644-54-44", "unit": "посещение", "who": ["date", "friends", "solo"], "maxGroup": 10, "note": "загородный клуб у Сестрорецка: бассейн, турецкая баня и сауна, работает круглосуточно"},
+  {"pick": true, "photo": "", "id": "insix", "kw": ["ин сикс", "insix", "in six", "массаж в шесть", "шесть рук"], "name": "inSix massage", "type": "relax", "area": "Большая Зеленина, 24", "lat": 59.9646, "lon": 30.2927, "minutes": 90, "check": 4500, "open": "10:00", "close": "22:00", "booking": true, "unit": "сеанс", "who": ["date", "solo"], "maxGroup": 2, "note": "массаж в шесть рук: тело, лицо и ноги одновременно, интерьер из камня и минимализм"},
+  {"pick": true, "photo": "", "id": "siberia", "kw": ["сибир", "siberia"], "name": "Банный комплекс Siberia", "type": "relax", "area": "набережная Обводного канала, 146", "lat": 59.9128, "lon": 30.2985, "minutes": 150, "check": 6000, "open": "10:00", "close": "23:00", "booking": true, "unit": "баню", "who": ["date", "friends", "solo"], "maxGroup": 10, "note": "пять видов бань в сибирском и алтайском духе, банно-массажные ритуалы и ресторан сибирской кухни"},
+  {"pick": true, "photo": "", "id": "serge", "kw": ["серж", "serge", "chez serge", "генсбур"], "name": "Бар «Серж»", "type": "bar", "area": "улица Восстания, 19 (отель Akyan)", "lat": 59.9377, "lon": 30.3627, "minutes": 90, "check": 2300, "open": "18:00", "close": "02:00", "booking": true, "unit": "столик", "who": ["date", "friends"], "maxGroup": 8, "note": "самый модный бар сезона от команды Cava Disco: красные салонные интерьеры в честь Сержа Генсбура, семь видов негрони"},
+  {"pick": true, "photo": "", "id": "vitya", "kw": ["витя", "бар витя"], "name": "Бар «Витя»", "type": "bar", "area": "улица Восстания, 19", "lat": 59.9378, "lon": 30.3625, "minutes": 80, "check": 2000, "open": "18:00", "close": "01:00", "booking": true, "unit": "столик", "who": ["date", "friends"], "maxGroup": 6, "note": "бар в парадной доходного дома Бадаева с петербургским шиком"},
+  {"pick": true, "photo": "", "id": "barslona", "kw": ["барслон", "у слона", "бар слона", "тапас"], "name": "Тапас-бар «Барслона»", "type": "bar", "area": "улица Рубинштейна, 26", "lat": 59.9276, "lon": 30.3453, "minutes": 90, "check": 2000, "open": "12:00", "close": "06:00", "booking": true, "phone": "+7 (812) 900-01-12", "unit": "столик", "who": ["friends", "date"], "maxGroup": 12, "note": "испанский тапас-бар на Рубинштейна, работает до шести утра", "cu": ["european"]},
+  {"pick": true, "photo": "", "id": "poltory", "kw": ["полторы комнат", "1 1/2"], "name": "Бар «Полторы комнаты»", "type": "bar", "area": "улица Маяковского, 34", "lat": 59.9418, "lon": 30.3544, "minutes": 80, "check": 1800, "open": "18:00", "close": "02:00", "booking": true, "phone": "+7 (921) 941-82-07", "unit": "столик", "who": ["date", "friends", "solo"], "maxGroup": 6, "note": "один из лучших коктейльных баров России, к каждому напитку своя закуска на один укус"},
+  {"pick": true, "photo": "", "id": "krasivaya", "kw": ["красивая", "красивую"], "name": "Бар «Красивая»", "type": "bar", "area": "Малый проспект П.С., 66/32", "lat": 59.9639, "lon": 30.3046, "minutes": 80, "check": 1500, "open": "15:00", "close": "01:00", "booking": true, "phone": "+7 (911) 111-66-32", "unit": "столик", "who": ["friends", "date"], "maxGroup": 8, "note": "рюмочная от команды «Звонка» на Петроградке: двадцать с лишним своих настоек и «Танец» Матисса на стене"},
+  {"pick": true, "photo": "", "id": "sadbar", "kw": ["sad bar", "сад бар", "грустн"], "name": "Sad bar", "type": "bar", "area": "переулок Ульяны Громовой, 4", "lat": 59.9339, "lon": 30.3646, "minutes": 80, "check": 1500, "open": "16:00", "close": "01:00", "booking": true, "phone": "+7 (911) 799-19-34", "unit": "столик", "who": ["friends", "date"], "maxGroup": 8, "note": "бар в петербургской тематике с наградой Яндекса «Хорошее место 2026»"},
+  {"pick": true, "photo": "", "id": "arhitektor", "kw": ["архитектор"], "name": "Бар «Архитектор»", "type": "bar", "area": "улица Рубинштейна, 13", "lat": 59.9302, "lon": 30.3458, "minutes": 80, "check": 2000, "open": "19:00", "close": "03:00", "days": [0, 3, 4, 5, 6], "booking": true, "phone": "+7 (812) 949-13-13", "unit": "столик", "who": ["date", "friends"], "maxGroup": 6, "note": "минималистичный коктейльный бар без вывески, авторские закуски"},
+  {"pick": true, "photo": "", "id": "elcopitas", "kw": ["копитас", "copitas", "мескал", "текил"], "name": "El Copitas", "type": "bar", "area": "Владимирский проспект, 18", "lat": 59.9285, "lon": 30.3474, "minutes": 80, "check": 2500, "open": "19:00", "close": "03:00", "booking": true, "unit": "столик", "who": ["date", "friends"], "maxGroup": 6, "note": "секретный бар с мескалем и мексиканскими коктейлями, бывал в мировом рейтинге The World’s 50 Best Bars"},
+  {"pick": true, "photo": "", "id": "kabinet", "kw": ["кабинет"], "name": "Спикизи-бар «Кабинет»", "type": "bar", "area": "Малая Садовая, 8", "lat": 59.9347, "lon": 30.3379, "minutes": 80, "check": 2000, "open": "19:00", "close": "03:00", "booking": true, "unit": "столик", "who": ["date", "friends"], "maxGroup": 6, "note": "театральный спикизи без вывески: свечи, сукно игорных столов, коктейльные твисты"},
+  {"pick": true, "photo": "", "id": "daiquiri", "kw": ["дайкири", "daiquiri"], "name": "Daiquiri Bar", "type": "bar", "area": "Большая Конюшенная, 1", "lat": 59.9366, "lon": 30.3238, "minutes": 80, "check": 2000, "open": "18:00", "close": "02:00", "booking": true, "unit": "столик", "who": ["friends", "date"], "maxGroup": 8, "note": "первый коктейльный бар Петербурга, в карте больше 400 позиций"},
+  {"pick": true, "photo": "", "id": "apotheke", "kw": ["аптек", "apotheke"], "name": "Apotheke Bar", "type": "bar", "area": "Кирочная, 12", "lat": 59.9435, "lon": 30.3566, "minutes": 80, "check": 2000, "open": "19:00", "close": "02:00", "booking": true, "unit": "столик", "who": ["date", "friends"], "maxGroup": 6, "note": "коктейли с аптекарской точностью, домашние настойки и редкий алкоголь"},
+  {"pick": true, "photo": "", "id": "konservator", "kw": ["консерватор"], "name": "Бар «Консерватор»", "type": "bar", "area": "проспект Римского-Корсакова, 5–7", "lat": 59.9252, "lon": 30.3001, "minutes": 80, "check": 2000, "open": "18:00", "close": "02:00", "booking": true, "unit": "столик", "who": ["date", "friends"], "maxGroup": 6, "note": "коктейльный бар у Новой Голландии из гида Ultima"},
+  {"pick": true, "photo": "", "id": "shum", "kw": ["шум", "кабаре"], "name": "Бар-кабаре «Шум»", "type": "bar", "also": ["show"], "area": "Манежный переулок, 5", "lat": 59.9437, "lon": 30.3483, "minutes": 120, "check": 2500, "open": "19:00", "close": "03:00", "booking": true, "unit": "столик", "who": ["date", "friends"], "maxGroup": 10, "note": "кабаре с баром, программа по вечерам"},
+  {"pick": true, "photo": "", "id": "pifpaf", "kw": ["пиф-паф", "пиф паф"], "name": "Бар «Пиф-Паф»", "type": "bar", "area": "канал Грибоедова, 31", "lat": 59.9333, "lon": 30.3262, "minutes": 60, "check": 1200, "open": "18:00", "close": "04:00", "booking": false, "walkin": true, "unit": "столик", "who": ["friends"], "maxGroup": 8, "note": "бар, который вписан во все путеводители по Петербургу"},
+  {"pick": true, "photo": "", "id": "hidden", "kw": ["hidden", "хидден"], "name": "Бар Hidden", "type": "bar", "area": "Новая Голландия, наб. Адмиралтейского канала, 2М", "lat": 59.9291, "lon": 30.2893, "minutes": 80, "check": 2500, "open": "18:00", "close": "02:00", "booking": true, "unit": "столик", "who": ["date", "friends"], "maxGroup": 6, "note": "коктейльный бар на острове Новая Голландия"},
+  {"pick": true, "photo": "", "id": "lastochki", "kw": ["ласточк"], "name": "Бар «Ласточки»", "type": "bar", "area": "улица Воскова, 31/20", "lat": 59.9583, "lon": 30.3085, "minutes": 80, "check": 1500, "open": "18:00", "close": "02:00", "booking": true, "unit": "столик", "who": ["friends", "date"], "maxGroup": 8, "note": "бар на Петроградке из гида Ultima"},
+  {"pick": true, "photo": "", "id": "darmagi", "kw": ["дармаги", "darmagi"], "name": "Винный бар Darmagi", "type": "bar", "area": "Каменноостровский проспект, 44Б", "lat": 59.9688, "lon": 30.3108, "minutes": 90, "check": 3000, "open": "16:00", "close": "00:00", "booking": true, "unit": "столик", "who": ["date", "friends"], "maxGroup": 6, "note": "винный бар на Каменноостровском"},
+  {"pick": true, "photo": "", "id": "intelligent", "kw": ["интеллигент", "рюмочн"], "name": "Рюмочная «Интеллигент»", "type": "bar", "area": "набережная Фонтанки, 38", "lat": 59.9331, "lon": 30.3437, "minutes": 60, "check": 1000, "open": "16:00", "close": "02:00", "booking": false, "walkin": true, "unit": "столик", "who": ["friends", "solo"], "maxGroup": 6, "note": "рюмочная на Фонтанке: настойки и закуски, без лишнего пафоса"},
+  {"pick": true, "photo": "", "id": "sinichka", "kw": ["синичк", "пельменн"], "name": "Рюмочная-пельменная «Синичка»", "type": "bar", "area": "Каменноостровский проспект, 14", "lat": 59.9576, "lon": 30.3176, "minutes": 60, "check": 1000, "open": "12:00", "close": "02:00", "booking": false, "walkin": true, "unit": "столик", "who": ["friends", "solo"], "maxGroup": 6, "note": "рюмочная с пельменями у Горьковской"},
+  {"pick": true, "photo": "", "id": "zvonok", "kw": ["звонок"], "name": "Рюмочная «Звонок»", "type": "bar", "area": "улица Некрасова, 34", "lat": 59.9393, "lon": 30.3583, "minutes": 60, "check": 1200, "open": "16:00", "close": "02:00", "booking": false, "walkin": true, "unit": "столик", "who": ["friends"], "maxGroup": 6, "note": "рюмочная на Некрасова, с неё началась «Красивая»"},
+  {"pick": true, "photo": "", "id": "europelobby", "kw": ["гранд отел", "европа", "лобби-бар"], "name": "Лобби-бар Гранд Отеля Европа", "type": "bar", "area": "Михайловская, 1/7", "lat": 59.9352, "lon": 30.331, "minutes": 80, "check": 4000, "open": "10:00", "close": "00:00", "booking": true, "unit": "столик", "who": ["date", "friends", "solo"], "maxGroup": 6, "note": "классический гранд-отельный бар на Невском, пианино и мрамор"},
   {"id": "greenflow", "kw": ["терм", "green flow"], "pick": true, "name": "Green Flow Lakhta Park", "type": "relax", "area": "Лахта", "lat": 59.99800, "lon": 30.14200, "minutes": 150, "check": 3500, "open": "10:00", "close": "22:00", "tickets": true, "who": ["date", "solo", "friends"], "maxGroup": 8, "note": "термальный комплекс с бассейнами у Лахтинского разлива", "photo": ""},
   {"id": "lencenter", "kw": ["кабаре", "шоу"], "pick": true, "name": "«Ленинград Центр»", "type": "show", "area": "Потёмкинская, 4", "lat": 59.94670, "lon": 30.37140, "minutes": 150, "check": 8000, "open": "19:00", "close": "23:00", "tickets": true, "phone": "+7 (812) 242-99-99", "who": ["date", "friends"], "maxGroup": 20, "note": "кабаре-шоу с акробатами и живым вокалом", "photo": ""},
   {"id": "butman", "also": ["bar"], "kw": ["джаз", "бутман"], "pick": true, "name": "Джаз-клуб Игоря Бутмана", "type": "show", "area": "канал Грибоедова, 7", "lat": 59.93780, "lon": 30.32680, "minutes": 130, "check": 4500, "open": "18:00", "close": "01:00", "booking": true, "phone": "+7 (981) 980-77-78", "unit": "столик на концерт", "who": ["date", "friends", "solo"], "maxGroup": 12, "note": "концерты каждый вечер, кроме понедельника, дресс-код", "photo": ""},
@@ -1661,7 +1687,7 @@ const KW={
   cinema:["кино","фильм","кинотеатр","сеанс","премьер","автокино","кинопарк"],
   active:["картинг","падел","теннис","каток","коньк","лыж","сноуборд","горнолыж","спорт","актив","адреналин","покатат","игора","охта парк","охтапарк","поиграть","аэротруб","полет","полёт","полетать","скалодром","скалолаз","боулдер","верёвоч","веревоч","экстрим","лазать","батут"],
   show:["шоу","кабаре","джаз","концерт","живая музык","живой музык","представлен","мюзикл"],
-  relax:["бассейн","поплава","плават","спа","spa","релакс","расслаб","терм","сауна","баня","бани","массаж","клиник","восстанов","перезагруз"],
+  relax:["бассейн","поплава","плават","спа","spa","релакс","расслаб","терм","сауна","сауну","саун","баня","бани","баню","бань","попарит","париться","парилк","хаммам","массаж","клиник","восстанов","перезагруз"],
   cigar:["сигар","покурить","курить","курим","курю","покурим"],
   workshop:["мастер-класс","мастер класс","мастеркласс","своими руками","гончар","керамик","лепк","свеч","парфюм","духи","бенто","торт","тафтинг","смол","флорариум","линогравюр","проявк","плёнк","пленк","творч","что-то создать","что-то сделать","сделать вместе","создать вместе","мороженое"],
   billiard:["бильярд"," пул "," пул,"," пул."," пулом"," пула "," в пул","снукер","пирамид","кий","кием","шары погонять","погонять шары","покатать шары"],
@@ -1718,9 +1744,20 @@ const DISHES={
  kidozel:["роллы и суши у открытой стойки","лапша и том ям"],
  medici:["пицца","паста с трюфельным соусом"],
  lorenzo:["пицца","паста"],
- mamatata:["хинкали и шашлык","домашние настойки"]
+ mamatata:["хинкали и шашлык","домашние настойки"],
+ serge:["семь видов негрони, от трюфельного до инжирного", "хот-дог с крабом", "улитки и устрицы"],
+ poltory:["водка с хлебом и балтийской килькой", "бурбон с мёдом в сотах", "кальвадос с фламбе из яблок"],
+ krasivaya:["филе сельди с пряной вишней", "южный борщ с томлёной телятиной", "домашние настойки"],
+ barslona:["испанский деревенский суп", "чечевица с чоризо"],
+ elcopitas:["мескаль", "коктейли по мотивам паломы и маргариты", "начос, севиче и гуакамоле"],
+ daiquiri:["«Хемингуэй Дайкири»"],
+ voda:["ресторан Mizu: европейская и японская кухня"],
+ siberia:["банно-массажный ритуал на одного, 2,5 часа"],
+ insix:["авторский массаж в шесть рук"]
 };
 const dishesOf=p=>p&&DISHES[p.id]||null;
+const checkLabel=p=>LT(p).some(t=>["food","bar","party","coffee","cigar","billiard","show"].includes(t))?"Средний чек":"Стоимость";
+const checkTxt=p=>p.check>0?"≈ "+fmtNum(p.check)+" ₽ на человека":"бесплатно";
 const CHAINS={
   kido:{name:"КИDO",ids:["kidosuv","kidozel"]},
   pot1:{name:"Гончарная студия №1",ids:["pot1nevsky","pot1transp","pot1zagor","pot1razezh","pot1kima","pot1optikov","pot1nauki"]},
@@ -1862,6 +1899,7 @@ function parseEdit(text){
     lp.like.forEach(t=>ch.like.push(t));lp.cuisine.forEach(t=>ch.cuisine.push(t));lp.boost.forEach(id=>ch.boost.push(id));
     if(/(добав|еще|ещё|плюс|и потом|потом)/.test(c))added+=Math.max(1,lp.like.filter(t=>!r.some(x=>LT(x.p).includes(t))).length);
   }
+  if(/(друг(ой|ие|ую) (маршрут|вариант|места|место)|измени маршрут|поменяй маршрут|смени маршрут|поменяй все|поменяй всё|что-нибудь другое|что-то другое|что то другое|не нравится|новый маршрут|еще вариант|ещё вариант|переделай|перестрой|по-другому|по другому|иначе|все не то|всё не то)/.test(low))ch.fresh=true;
   if(/(ближе|поближе|рядом друг|не так далеко|компактн|меньше ехать|без метро|далеко|разбросан|пешком)/.test(low))ch.compact=true;
   if(/(дешевле|подешевле|бюджетн|недорог)/.test(low))ch.cheap=true;
   if(/(дороже|подороже|покруче|пошикарн|дорог)/.test(low)&&!ch.cheap)ch.lux=true;
@@ -1895,18 +1933,20 @@ function editSummary(ch){
   if(ch.maxStops)parts.push(ch.maxStops===1?"одно место":"мест в маршруте: "+ch.maxStops);
   if(ch.hours)parts.push("закончим около "+hm((state.form.start+ch.hours)*60));
   if(ch.start)parts.push("начало в "+ch.start);
+  if(ch.fresh)parts.push("собрал вечер из других мест");
   return parts.length?"Поменял: "+parts.join("; ")+".":"";
 }
 async function interpretEdit(text){
   const ch=parseEdit(text);
   const r=state.res?state.res.route:[];
   const prompt=`Ты правишь маршрут по Санкт-Петербургу по просьбе человека. Верни ТОЛЬКО JSON:
-{"like":[],"avoid":[],"include":[],"exclude":[],"cuisine":[],"cuisineAvoid":[],"cheap":false,"lux":false,"compact":false,"maxStops":null,"hours":null,"start":null}
+{"like":[],"avoid":[],"include":[],"exclude":[],"cuisine":[],"cuisineAvoid":[],"cheap":false,"lux":false,"compact":false,"fresh":false,"maxStops":null,"hours":null,"start":null}
 like/avoid: типы food, coffee, walk, culture, view, bar, party, cinema, active, show, relax, cigar, workshop, fun, billiard, которые надо добавить или убрать вообще.
 exclude: id мест из ТЕКУЩЕГО маршрута, которые человек просит убрать или заменить («убери второе место», «замени ресторан» — клади id этого места).
 include: id мест из списка, только если человек назвал конкретное место.
 cuisine/cuisineAvoid: jp, cn, asian, georgian, italian, russian, meat, fish, east, european, german, dessert.
 compact: true, если просит места поближе друг к другу или жалуется, что далеко.
+fresh: true, если человек просто хочет другой вариант, другие места или «измени маршрут» без подробностей.
 maxStops: сколько мест должно быть в маршруте после правки, если это понятно из просьбы, иначе null. В маршруте не бывает двух ресторанов.
 hours: новая длительность в часах или null. start: новое время начала "ЧЧ:ММ" или null.
 Сейчас: ${whoLabel(state.form)}, начало ${hm(state.form.start*60)}, ${hoursTxt(state.form.hours)}.
@@ -1918,6 +1958,7 @@ ${placeList()}
   if(ai){
     for(const k of ["like","avoid","include","exclude","cuisine","cuisineAvoid"])ch[k]=[...new Set([...ch[k],...(ai[k]||[])])];
     ch.like=ch.like.filter(t=>!ch.avoid.includes(t));
+    if(ai.fresh)ch.fresh=true;
     if(ai.compact)ch.compact=true;if(ai.cheap)ch.cheap=true;if(ai.lux&&!ch.cheap)ch.lux=true;
     if(ai.maxStops&&!ch.maxStops)ch.maxStops=ai.maxStops;
     if(ai.hours&&!ch.hours)ch.hours=ai.hours;if(ai.start&&!ch.start)ch.start=ai.start;
@@ -2019,6 +2060,9 @@ function build(){
       if(ASK.includes(p.type)&&LT(p).some(t=>pr.like.includes(t)))s+=4;
       if(p.pick)s+=2.5;
       if(p.far)s-=1;
+      if(!forced&&state.recent&&state.recent.has(p.id))s-=state.recentHard?6:3;
+      if(p.type==="bar"&&!route.length&&pr.like.includes("food")&&!forced&&!boosted)s-=3;
+      if(p.type==="party"&&cl<1290&&cl>=600&&!forced&&!boosted)s-=4;
       const fav=LT(p).some(t=>pr.like.includes(t))&&pr.like.length<=2;
       const hop=p.type==="party"&&pr.like.includes("party")&&(cl>=1380||cl<360);
       if(hop&&route.filter(r=>r.p.type==="party").length>=2)continue;
@@ -2172,7 +2216,7 @@ async function startBuild(){
   const [prefs]=await Promise.all([interpret(f.wish,f.quick),sleep(reduced?0:1900)]);
   clearInterval(tick);
   if(state.want){prefs.include=[...new Set([...(prefs.include||[]),state.want])];state.want=null}
-  state.prefs=prefs;state.seed=1;state.calls=[];state.vip={};
+  state.prefs=prefs;state.seed=1;state.calls=[];state.vip={};state.recent=null;state.recentList=[];
   state.res=build();
   renderRoute(true);
   $("#fbForm").hidden=true;$("#toast").textContent="";
@@ -2203,7 +2247,7 @@ function renderRoute(animate){
     if(c&&["ok","shift","selfok","sent"].includes(c.status))badge='<span class="badge need">Забронировано</span>';
     if(c&&c.status==="prepay")badge='<span class="badge">Ждёт депозита</span>';
     out+='<li style="--i:'+(k++)+';--cat:var(--c-'+x.p.type+')"><article class="stop" data-open="'+i+'" tabindex="0" role="button" aria-label="Подробнее: '+esc(x.p.name)+'"><div class="cover" data-pid="'+esc(x.p.id)+'">'+cover(x.p,i)+'<span class="n">'+(i+1)+'</span><span class="time">'+hm(x.arrive)+'–'+hm(x.end)+'</span></div>'+
-      '<div class="body"><h3>'+esc(x.p.name)+'</h3><p class="meta"><span class="cat">'+TYPES[x.p.type]+'</span>, '+durTxt(x.end-x.arrive)+'</p><p class="addr">'+esc(x.p.area)+'</p>'+(x.p.note?'<p class="pnote">'+esc(x.p.note)+'</p>':'')+(dishesOf(x.p)?'<p class="pdish"><b>Что взять:</b> '+esc(dishesOf(x.p)[0])+'</p>':'')+branchHTML(x.p,i)+
+      '<div class="body"><h3>'+esc(x.p.name)+'</h3><p class="meta"><span class="cat">'+TYPES[x.p.type]+'</span>, '+durTxt(x.end-x.arrive)+(x.p.check>0?', чек ≈ '+fmtNum(x.p.check)+' ₽':'')+'</p><p class="addr">'+esc(x.p.area)+'</p>'+(x.p.note?'<p class="pnote">'+esc(x.p.note)+'</p>':'')+(dishesOf(x.p)?'<p class="pdish"><b>Что взять:</b> '+esc(dishesOf(x.p)[0])+'</p>':'')+branchHTML(x.p,i)+
       '<div class="foot">'+badge+'<button class="link" data-swap="'+i+'">Заменить</button></div></div></article></li>';
   });
   $("#timeline").innerHTML=out;
@@ -2328,7 +2372,7 @@ function placeDialog(p,x,i){
   $("#placeBody").innerHTML='<div class="pl-gal" id="plGal" style="--cat:var(--c-'+p.type+')"><div class="pl-ph">'+cover(p,"d"+p.id)+'</div></div>'+
     '<div class="pl-in"><h3 id="plTitle">'+esc(p.name)+'</h3>'+
     '<p class="pl-addr">'+esc(p.area)+'</p>'+
-    '<dl class="pl-facts"><div><dt>'+(inRoute?"В маршруте":"Что это")+'</dt><dd>'+(inRoute?hm(x.arrive)+'–'+hm(x.end):TYPES[p.type])+'</dd></div><div><dt>Часы работы</dt><dd>'+esc(p.open)+'–'+esc(p.close)+'</dd></div><div><dt>Бронь</dt><dd>'+book+'</dd></div></dl>'+
+    '<dl class="pl-facts"><div><dt>'+(inRoute?"В маршруте":"Что это")+'</dt><dd>'+(inRoute?hm(x.arrive)+'–'+hm(x.end):TYPES[p.type])+'</dd></div><div><dt>Часы работы</dt><dd>'+esc(p.open)+'–'+esc(p.close)+'</dd></div><div><dt>Бронь</dt><dd>'+book+'</dd></div><div><dt>'+checkLabel(p)+'</dt><dd>'+checkTxt(p)+'</dd></div></dl>'+
     (p.note?'<h4>Что это за место</h4><p class="pl-note">'+esc(p.note.charAt(0).toUpperCase()+p.note.slice(1))+'.</p>':'')+
     (dishesOf(p)?'<h4>Что взять</h4><ul class="pl-dish">'+dishesOf(p).map(d=>'<li>'+esc(d)+'</li>').join('')+'</ul>':'')+
     (why.length?'<h4>Почему мы его выбрали</h4><p class="pl-type" id="plType"></p>':'')+
@@ -2381,7 +2425,15 @@ $("#timeline").addEventListener("click",e=>{
   state.calls=[];state.res=build();renderRoute(true);
   $("#toast").textContent="Заменил «"+p.name+"», маршрут пересобран.";
 });
-$("#btnRebuild").addEventListener("click",()=>{state.seed++;state.calls=[];state.res=build();renderRoute(true)});
+function rebuildDifferent(hard){
+  const prev=state.res?state.res.route.map(x=>x.p.id):[];
+  state.recentList=[...(state.recentList||[]),prev].slice(-2);state.recent=new Set(state.recentList.flat());state.recentHard=!!hard;
+  let res=null;
+  for(let k=0;k<6;k++){state.seed++;res=build();const ids=res.route.map(x=>x.p.id);if(ids.join()!==prev.join()&&ids.some(id=>!prev.includes(id)))break}
+  if(res.route.length<Math.min(2,prev.length)&&state.recent.size>prev.length){state.recent=new Set(prev);res=build()}
+  state.recentHard=false;return res;
+}
+$("#btnRebuild").addEventListener("click",()=>{state.calls=[];state.vip={};state.res=rebuildDifferent(true);renderRoute(true);flash("Собрал вечер из других мест.")});
 $("#btnEdit").addEventListener("click",()=>{state.step=0;renderStep(0);go("s-wiz")});
 $("#fbEdit").addEventListener("click",()=>{$("#fbForm").hidden=false;$("#editText").focus()});
 $("#fbOk").addEventListener("click",()=>{prepareBooking();go("s-book")});
@@ -2406,7 +2458,10 @@ $("#fbApply").addEventListener("click",async()=>{
   if(c.lux){pr.lux=true;pr.cheap=false}if(c.cheap){pr.cheap=true;pr.lux=false}
   if(c.hours)state.form.hours=c.hours;
   if(c.start){const s=toH(c.start);if(s>=0&&s<24)state.form.start=s}
-  state.seed++;state.calls=[];state.vip={};state.res=build();
+  state.calls=[];state.vip={};
+  if(c.fresh)state.res=rebuildDifferent(true);
+  else{const prev=state.res?state.res.route.map(x=>x.p.id).join():"";state.seed++;state.res=build();
+    if(state.res.route.map(x=>x.p.id).join()===prev)state.res=rebuildDifferent(false);}
   const lost=c.like.filter(t=>t!=="food"&&t!=="coffee"&&!state.res.route.some(x=>LT(x.p).includes(t)));
   renderRoute(true);flash(c.summary+(lost.length?" Рядом с маршрутом не нашлось: "+lost.map(t=>TYPES[t].toLowerCase()).join(", ")+". Можно написать «убери ресторан», и маршрут соберётся вокруг другого места.":""));
   btn.disabled=false;btn.innerHTML='Пересобрать с правками';
@@ -2495,7 +2550,7 @@ function renderCalls(){
     const locked=c.status!=="queue";
     const self=c.mode==="self"&&c.status==="queue";
     const ph=c.r.p.phone;
-    return '<article class="call" id="call-'+i+'" data-status="'+c.status+'"><header><div class="ring">'+PHONE_ICON+'</div><div><h3>'+esc(c.r.p.name)+'</h3><p>'+esc(unitOf(c))+' '+forN(n)+' в <span class="ct">'+hm(c.r.arrive)+'</span></p></div><span class="status">'+statusText(c)+'</span>'+(c.paid?'<span class="tokspent">−1 токен</span>':'')+'</header>'+
+    return '<article class="call" id="call-'+i+'" data-status="'+c.status+'"><header><div class="ring">'+PHONE_ICON+'</div><div><h3><b><i>'+esc(c.r.p.name)+'</i></b></h3><p>'+esc(unitOf(c))+' '+forN(n)+' в <b class="ct">'+hm(c.r.arrive)+'</b></p></div><span class="status">'+statusText(c)+'</span>'+(c.paid?'<span class="tokspent">−1 токен</span>':'')+'</header>'+
       (locked?'':'<div class="seg" role="group" aria-label="Кто звонит">'+(c.mode!=="bot"&&botQueued>=bal?'<button data-mode="bot" data-lock="1" data-i="'+i+'" class="locked" aria-pressed="false" aria-label="Бот позвонит: нужен 1 токен">'+LOCK_ICON+'Бот позвонит</button>':'<button data-mode="bot" data-i="'+i+'" aria-pressed="'+(c.mode==="bot")+'">Бот позвонит</button>')+'<button data-mode="self" data-i="'+i+'" aria-pressed="'+(c.mode==="self")+'">Позвоню сам</button></div>')+
       (self?'<div class="selfbox"><div class="phone">'+(ph?'<b>'+esc(ph)+'</b><button class="btn" data-copy="'+esc(ph)+'">Скопировать номер</button>':'<span class="hint">Номера этого места пока нет в базе. Добавим, когда заполним базу.</span>')+'</div>'+
         '<p class="say">Что сказать: <b>«Здравствуйте! Хочу забронировать '+esc(unitOf(c))+' '+forN(n)+' сегодня на '+hm(c.r.arrive)+', на имя '+esc(name)+'»</b></p>'+
