@@ -215,8 +215,10 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 .link:hover{color:var(--text);text-decoration-color:var(--text)}
 .leg{display:flex;align-items:center;gap:12px;padding:10px 0 10px 28px;font-size:13px;color:var(--muted);position:relative}
 .leg::before{content:"";position:absolute;left:30px;top:0;bottom:0;width:2px;background:var(--neon);box-shadow:0 0 8px var(--neon);opacity:.7}
+.leg.bus::before{background:repeating-linear-gradient(to bottom,var(--neon) 0 10px,transparent 10px 14px);box-shadow:none}
 .leg.metro::before{background:repeating-linear-gradient(to bottom,var(--neon) 0 6px,transparent 6px 11px);box-shadow:none}
 .leg span{margin-left:22px}
+.ymaps{display:flex;width:calc(100% - 8px);margin:8px 4px 4px;gap:8px;justify-content:center;text-decoration:none;color:var(--text)}.ymaps[hidden]{display:none}
 .mapcard{position:sticky;top:16px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:8px;overflow:hidden}
 .mapcard #map>svg{display:block;width:100%;height:auto}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 10px 6px;font-size:12px;color:var(--muted)}
@@ -1349,7 +1351,7 @@ body[data-screen="s-reg"] .foot-note .link,body[data-screen="s-home"] .foot-note
         <ol class="tl" id="timeline"></ol>
         <div id="rNote"></div>
       </div>
-      <div class="mapcard"><div id="map"></div><div class="legend" id="legend"></div></div>
+      <div class="mapcard"><div id="map"></div><div class="legend" id="legend"></div><a class="btn ymaps" id="ymaps" target="_blank" rel="noopener" hidden><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>Построить маршрут в Яндекс Картах</span></a></div>
     </div>
     <div class="feedback" id="feedback">
       <h3>Как тебе маршрут?</h3>
@@ -1524,6 +1526,10 @@ const KUSH_PLACES=[
   {"pick": true, "photo": "", "id": "sinichka", "kw": ["синичк", "пельменн"], "name": "Рюмочная-пельменная «Синичка»", "type": "bar", "area": "Каменноостровский проспект, 14", "lat": 59.9576, "lon": 30.3176, "minutes": 60, "check": 1000, "open": "12:00", "close": "02:00", "booking": false, "walkin": true, "unit": "столик", "who": ["friends", "solo"], "maxGroup": 6, "note": "рюмочная с пельменями у Горьковской"},
   {"pick": true, "photo": "", "id": "zvonok", "kw": ["звонок"], "name": "Рюмочная «Звонок»", "type": "bar", "area": "улица Некрасова, 34", "lat": 59.9393, "lon": 30.3583, "minutes": 60, "check": 1200, "open": "16:00", "close": "02:00", "booking": false, "walkin": true, "unit": "столик", "who": ["friends"], "maxGroup": 6, "note": "рюмочная на Некрасова, с неё началась «Красивая»"},
   {"pick": true, "photo": "", "id": "europelobby", "kw": ["гранд отел", "европа", "лобби-бар"], "name": "Лобби-бар Гранд Отеля Европа", "type": "bar", "area": "Михайловская, 1/7", "lat": 59.9352, "lon": 30.331, "minutes": 80, "check": 4000, "open": "10:00", "close": "00:00", "booking": true, "unit": "столик", "who": ["date", "friends", "solo"], "maxGroup": 6, "note": "классический гранд-отельный бар на Невском, пианино и мрамор"},
+  {"pick": true, "photo": "", "id": "thehat", "kw": ["the hat", "хэт", "шляп"], "name": "Джаз-бар The Hat", "type": "bar", "also": ["show"], "feat": ["jazz", "live"], "area": "улица Белинского, 9", "lat": 59.9404, "lon": 30.3477, "minutes": 100, "check": 1500, "open": "19:00", "close": "03:00", "booking": false, "walkin": true, "unit": "место", "who": ["date", "friends", "solo"], "maxGroup": 6, "note": "стоячий джаз-бар в духе 1950-х: живая музыка каждый вечер, джем-сейшены, афиши нет — можно попасть и на местное трио, и на зарубежных музыкантов"},
+  {"pick": true, "photo": "", "id": "jfc", "kw": ["jfc", "джей эф си", "шпалерн"], "name": "JFC Jazz Club", "type": "show", "also": ["bar"], "feat": ["jazz", "live"], "area": "Шпалерная улица, 33", "lat": 59.9483, "lon": 30.3637, "minutes": 120, "check": 2000, "open": "19:00", "close": "23:00", "booking": true, "phone": "+7 (812) 272-98-50", "unit": "столик", "who": ["date", "friends", "solo"], "maxGroup": 8, "note": "камерный клуб у Невы: каждый вечер живой джаз от диксиленда до фанка, резиденты и гости из других стран"},
+  {"pick": true, "photo": "", "id": "jazzphil", "kw": ["филармония джаз", "джазовой филармон", "загородный 27"], "name": "Филармония джазовой музыки", "type": "show", "feat": ["jazz", "live"], "area": "Загородный проспект, 27", "lat": 59.9257, "lon": 30.3407, "minutes": 120, "check": 1600, "open": "19:00", "close": "22:00", "booking": false, "tickets": true, "unit": "билет", "who": ["date", "friends", "solo"], "maxGroup": 20, "note": "академический джаз на большой сцене, концерты по вечерам; билеты лучше купить заранее"},
+  {"pick": true, "photo": "", "id": "jazzberry", "kw": ["jazzberry", "джазберри"], "name": "Ресторан Jazzberry", "type": "food", "also": ["bar"], "feat": ["jazz", "live"], "area": "Синопская набережная, 52", "lat": 59.9302, "lon": 30.3995, "minutes": 120, "check": 2500, "open": "12:00", "close": "00:00", "booking": true, "unit": "столик", "who": ["date", "friends"], "maxGroup": 10, "note": "ресторан с европейской кухней, джазовые концерты по четвергам, пятницам и субботам", "cu": ["european"]},
   {"id": "greenflow", "kw": ["терм", "green flow"], "pick": true, "name": "Green Flow Lakhta Park", "type": "relax", "area": "Лахта", "lat": 59.99800, "lon": 30.14200, "minutes": 150, "check": 3500, "open": "10:00", "close": "22:00", "tickets": true, "who": ["date", "solo", "friends"], "maxGroup": 8, "note": "термальный комплекс с бассейнами у Лахтинского разлива", "photo": ""},
   {"id": "lencenter", "kw": ["кабаре", "шоу"], "pick": true, "name": "«Ленинград Центр»", "type": "show", "area": "Потёмкинская, 4", "lat": 59.94670, "lon": 30.37140, "minutes": 150, "check": 8000, "open": "19:00", "close": "23:00", "tickets": true, "phone": "+7 (812) 242-99-99", "who": ["date", "friends"], "maxGroup": 20, "note": "кабаре-шоу с акробатами и живым вокалом", "photo": ""},
   {"id": "butman", "also": ["bar"], "kw": ["джаз", "бутман"], "pick": true, "name": "Джаз-клуб Игоря Бутмана", "type": "show", "area": "канал Грибоедова, 7", "lat": 59.93780, "lon": 30.32680, "minutes": 130, "check": 4500, "open": "18:00", "close": "01:00", "booking": true, "phone": "+7 (981) 980-77-78", "unit": "столик на концерт", "who": ["date", "friends", "solo"], "maxGroup": 12, "note": "концерты каждый вечер, кроме понедельника, дресс-код", "photo": ""},
@@ -1651,7 +1657,7 @@ const PLACES=KUSH_PLACES.map(p=>{
 
 const state={
   screen:"s-home",step:0,
-  form:{who:"date",n:2,start:19,hours:5,budget:"",wish:"",quick:[]},
+  form:{who:"date",n:2,start:19,hours:5,budget:"",wish:"",quick:[],move:"metro"},
   prefs:{like:[],avoid:[],include:[],exclude:[],boost:[],cheap:false,summary:""},
   seed:1,res:null,calls:[],running:false,vip:{},want:null
 };
@@ -1671,7 +1677,15 @@ const kmTxt=k=>k.toFixed(1).replace(".",",")+" км";
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const fmtNum=v=>String(v).replace(/\D/g,"").replace(/\B(?=(\d{3})+(?!\d))/g," ");
 function rnd(seed,id){let h=2166136261^seed;for(let i=0;i<id.length;i++){h^=id.charCodeAt(i);h=Math.imul(h,16777619)}return ((h>>>0)%1000)/1000}
-function travel(a,b){if(a.far||b.far){const m=(a.far?a.trip||60:0)+(b.far?b.trip||60:0);return {mode:"car",min:Math.round(m),km:0}}const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<=1.8)return {mode:"walk",min:Math.max(3,Math.round(d*1.3/4.6*60)),km:d*1.3};return {mode:"metro",min:Math.round(12+d*2.2),km:0}}
+function travel(a,b){if(a.far||b.far){const m=(a.far?a.trip||60:0)+(b.far?b.trip||60:0);return {mode:"car",min:Math.round(m),km:0}}const d=Math.hypot(a.x-b.x,a.y-b.y);
+  const mv=(typeof state!=="undefined"&&state.form&&state.form.move)||"metro";
+  const walk={mode:"walk",min:Math.max(3,Math.round(d*1.3/4.6*60)),km:d*1.3};
+  if(mv==="walk")return walk;
+  if(mv==="car")return d<=0.6?walk:{mode:"car",min:Math.round(8+d*2.6),km:0};
+  if(mv==="bus")return d<=1.2?walk:{mode:"bus",min:Math.round(9+d*3.3),km:0};
+  if(d<=1.8)return walk;return {mode:"metro",min:Math.round(12+d*2.2),km:0}}
+const MOVE={walk:"Пешком",metro:"Метро",bus:"Автобус, трамвай",car:"Машина или такси"};
+const legTxt=l=>l.mode==="walk"?(l.km<0.1?"рядом, пара минут пешком":"пешком "+l.min+" мин, "+kmTxt(l.km)):l.mode==="car"?(state.form.move==="car"?"на машине ≈ "+l.min+" мин с парковкой":"на машине или такси за город ≈ "+l.min+" мин"):l.mode==="bus"?"автобусом или трамваем ≈ "+l.min+" мин":"на метро ≈ "+l.min+" мин";
 const whoLabel=f=>f.who==="date"?"Свидание":f.who==="solo"?"Один":"Компания, "+f.n+" чел.";
 const budgetNum=()=>parseInt(String(state.form.budget).replace(/\D/g,""),10)||0;
 
@@ -1697,9 +1711,20 @@ const KW={
 /* ---------- кухни и ценовые группы ---------- */
 const CU={mio:["italian"],mansarda:["european"],schastye:["european","dessert"],rybalka:["fish","russian"],karlfriedrich:["german","meat"],
   reborn:["meat"],shalyapin:["russian"],marivanna:["russian"],meatcoin:["meat"],mamatata:["east"],chabrets:["east"],percorso:["italian","european"],
-  terrassa:["european","asian"],flori:["italian"],joli:["fish","european"],ming:["asian","cn"],jidai:["asian","jp"],bistroteka:["european"],
+  terrassa:["european","asian","jp"],flori:["italian"],joli:["fish","european"],ming:["asian","cn"],jidai:["asian","jp"],bistroteka:["european"],
   rimski:["italian"],futurist:["european"],siesta:["fish","european"],kidosuv:["asian","jp"],kidozel:["asian","jp"],medici:["italian"],lorenzo:["italian"]};
-PLACES.forEach(p=>{p.cu=CU[p.id]||[]});
+PLACES.forEach(p=>{p.cu=p.cu&&p.cu.length?p.cu:CU[p.id]||[]});
+/* форматы: человек пишет «бар с джазом» — значит нужен именно джаз, а не любой бар */
+const FEAT_KW={jazz:["джаз","jazz","блюз","свинг"],live:["живая музык","живой музык","живую музык","живым звук","живой звук","концерт","музыкант"],
+  karaoke:["караоке"],roof:["на крыше","крыш","руфтоп","rooftop"],dance:["потанцев","танцы","танцев","дискотек"],wine:["винн","вино ","вина "],cocktail:["коктейл"]};
+const FEAT_NAME={jazz:"джаз",live:"живая музыка",karaoke:"караоке",roof:"на крыше",dance:"танцы",wine:"вино",cocktail:"коктейли"};
+const FEAT_MAN={butman:["jazz","live"],siesta:["live"],shum:["live"],spletni:["karaoke","dance"],leps:["karaoke","live"],royalneva:["karaoke","dance"],
+  daiquiri:["cocktail"],serge:["cocktail"],poltory:["cocktail"],elcopitas:["cocktail"],kabinet:["cocktail"],apotheke:["cocktail"],arhitektor:["cocktail"],konservator:["cocktail"],hidden:["cocktail"],darmagi:["wine"],aiki:["roof"],silentcinema:["roof"]};
+PLACES.forEach(p=>{const f=new Set([...(p.feat||[]),...(FEAT_MAN[p.id]||[])]);
+  const t=(p.name+" "+(p.note||"")).toLowerCase().replace(/ё/g,"е");
+  if(/джаз|jazz/.test(t))f.add("jazz");if(/караоке/.test(t))f.add("karaoke");if(/живая музыка|живой музык/.test(t))f.add("live");if(f.has("jazz"))f.add("live");
+  p.feat=[...f]});
+const hasFeat=(p,want)=>want.some(w=>(p.feat||[]).includes(w));
 const CU_KW={
   jp:["суши","ролл","сашими","японск","япони","рамен","удон","омакасе"],
   cn:["китайск","китай","димсам","дим-сам","утка по-пекин","пекинск"],
@@ -1771,13 +1796,14 @@ const tierOf=p=>p.check<=1500?1:p.check<=3200?2:3;
 const TIERED=p=>p.check>0&&LT(p).some(t=>["food","bar","party"].includes(t));
 const NEG=/(без |не хочу|не хотим|не надо|не нужн|никаких|кроме|убер|убрать|убрав|не люблю|не пь|не пойд|минус|замени)/;
 function localParse(text,quick){
-  const like=new Set(),avoid=new Set(),exclude=new Set(),boost=new Set(),cuisine=new Set(),cuisineAvoid=new Set();
+  const like=new Set(),avoid=new Set(),exclude=new Set(),boost=new Set(),cuisine=new Set(),cuisineAvoid=new Set(),feat=new Set();
   quick.forEach(q=>QUICK.find(x=>x.id===q).types.forEach(t=>like.add(t)));
   const low=(" "+(text||"").toLowerCase()+" ").replace(/ё/g,"е");
   const clauses=low.split(/[.,;!?\n]| но | а потом | потом | и потом /);
   for(const c of clauses){
     const neg=NEG.test(c);
     for(const t in CU_KW){ if(CU_KW[t].some(k=>c.includes(k))) (neg?cuisineAvoid:cuisine).add(t) }
+    if(!neg)for(const t in FEAT_KW){ if(FEAT_KW[t].some(k=>c.includes(k))) feat.add(t) }
     // «без грузинской кухни» не значит «без еды»
     const cuNeg=neg&&CU_TAGS.some(t=>CU_KW[t].some(k=>c.includes(k)));
     for(const t in KW){ if(KW[t].some(k=>c.includes(k))){ if(neg){ if(!(cuNeg&&t==="food")) avoid.add(t) } else like.add(t) } }
@@ -1799,13 +1825,29 @@ function localParse(text,quick){
   if(cuisineAvoid.size)s.push("без кухни: "+[...cuisineAvoid].map(t=>CU_NAME[t]).join(", "));
   if(cheap)s.push("подешевле");if(lux)s.push("места подороже");
   exclude.forEach(id=>boost.delete(id));
-  return {like:[...like],avoid:[...avoid],include:[],exclude:[...exclude],boost:[...boost],cheap,lux,cuisine:[...cuisine],cuisineAvoid:[...cuisineAvoid],summary:s.length?"Понял так: "+s.join("; ")+".":""};
+  // формат музыки/места тянет за собой тип: джаз — это бар или концерт
+  if(feat.has("jazz")||feat.has("live")){if(!like.has("show")&&!like.has("bar"))like.add("bar");if(/бар/.test(low)&&!/шоу|концерт|кабаре|мюзикл|представлен|филармон/.test(low))like.delete("show")}
+  if(feat.has("karaoke")||feat.has("dance"))like.add("party");
+  if(feat.size)s.push("формат: "+[...feat].map(t=>FEAT_NAME[t]).join(", "));
+  // порядок: «сначала погулять, потом бар» — соблюдаем
+  let order=[];
+  if(/сначала|потом|затем|после этого|после чего|в конце|а дальше|под конец|напоследок|для начала|начнем с|начать с/.test(low)){
+    const pos=t=>{let m=1e9;for(const k of (KW[t]||[]))if(k.length>2){const i=low.indexOf(k);if(i>=0&&i<m)m=i}
+      if(t==="bar"||t==="show")for(const k of [...FEAT_KW.jazz,...FEAT_KW.live]){const i=low.indexOf(k);if(i>=0&&i<m)m=i}
+      if(t==="food")for(const ks of Object.values(CU_KW))for(const k of ks){const i=low.indexOf(k);if(i>=0&&i<m)m=i}
+      return m};
+    order=[...like].map(t=>[t,pos(t)]).filter(x=>x[1]<1e9).sort((a,b)=>a[1]-b[1]).map(x=>x[0]);
+    if(order.includes("bar")&&order.includes("show")&&feat.has("jazz"))order=order.filter(t=>t!=="show");
+    if(order.length>=2)s.push("порядок: "+order.map(t=>TYPES[t].toLowerCase()).join(" → "));else order=[];
+  }
+  return {feat:[...feat],order,like:[...like],avoid:[...avoid],include:[],exclude:[...exclude],boost:[...boost],cheap,lux,cuisine:[...cuisine],cuisineAvoid:[...cuisineAvoid],summary:s.length?"Понял так: "+s.join("; ")+".":""};
 }
 function placeList(){return PLACES.map(p=>p.id+" — "+p.name+" — "+p.type).join("\n")}
 function cleanPrefs(v){
   const T=Object.keys(TYPES),ids=new Set(PLACES.map(p=>p.id));
   const arr=(a,ok)=>Array.isArray(a)?a.filter(x=>ok(x)):[];
   return {like:arr(v.like,x=>T.includes(x)),avoid:arr(v.avoid,x=>T.includes(x)),include:arr(v.include,x=>ids.has(x)),exclude:arr(v.exclude,x=>ids.has(x)),
+    feat:arr(v.feat,x=>x in FEAT_KW),order:arr(v.order,x=>T.includes(x)),
     cheap:!!v.cheap,lux:!!v.lux,cuisine:arr(v.cuisine,x=>CU_TAGS.includes(x)),cuisineAvoid:arr(v.cuisineAvoid,x=>CU_TAGS.includes(x)),summary:typeof v.summary==="string"?v.summary.slice(0,220):"",
     maxStops:typeof v.maxStops==="number"&&v.maxStops>=1&&v.maxStops<=5?Math.round(v.maxStops):null,compact:!!v.compact,
     hours:typeof v.hours==="number"&&v.hours>=1&&v.hours<=12?v.hours:null,start:typeof v.start==="string"&&/^\d{1,2}:\d{2}$/.test(v.start)?v.start:null};
@@ -1829,7 +1871,10 @@ async function interpret(text,quick){
   if(!text||!text.trim())return local;
   const f=state.form;
   const prompt=`Ты помогаешь собрать маршрут по Санкт-Петербургу. Разбери пожелание человека и верни ТОЛЬКО JSON без пояснений:
-{"like":[],"avoid":[],"include":[],"exclude":[],"cuisine":[],"cuisineAvoid":[],"cheap":false,"lux":false,"summary":""}
+{"like":[],"avoid":[],"include":[],"exclude":[],"cuisine":[],"cuisineAvoid":[],"feat":[],"order":[],"cheap":false,"lux":false,"summary":""}
+Внимательно прочитай текст целиком: что именно, в каком порядке и в каком формате хочет человек.
+feat: формат, если человек его назвал: jazz (джаз, блюз), live (живая музыка, концерт), karaoke, roof (на крыше), dance (потанцевать), wine, cocktail. «Бар с джазом» — это feat jazz, обычный коктейльный бар не подходит.
+order: типы мест в том порядке, в котором человек хочет их посетить, если он говорит «сначала… потом…». Например «сначала погулять, потом бар с джазом» → ["walk","bar"]. Если порядок не важен — пустой список.
 like и avoid: типы мест из списка food, coffee, walk, culture, view, bar, party, cinema, active, show, relax, cigar, workshop, fun, billiard.
 billiard = бильярд: американский пул, русская пирамида, снукер.
 party = клубы, караоке, тусовки. cinema = кино. active = картинг, падел, каток, горные лыжи (Игора и Охта Парк за городом). show = кабаре-шоу и джаз-концерты. relax = бассейн, термы, SPA, клиника. workshop = мастер-классы (гончарка, бенто-торты, свечи, парфюм, тафтинг, смола). fun = интерактивные музеи и развлечения (иллюзии, советские автоматы, магия). cigar = сигары, ставь ТОЛЬКО если человек сам написал про сигары или «покурить».
@@ -1848,6 +1893,8 @@ ${placeList()}
   c.boost=local.boost.filter(id=>!c.exclude.includes(id));
   c.cuisine=[...new Set([...(c.cuisine||[]),...local.cuisine])];c.cuisineAvoid=[...new Set([...(c.cuisineAvoid||[]),...local.cuisineAvoid])];
   c.cuisine=c.cuisine.filter(t=>!c.cuisineAvoid.includes(t));c.lux=c.lux||local.lux;c.cheap=c.cheap||local.cheap;
+  c.feat=[...new Set([...(c.feat||[]),...local.feat])];if(!(c.order||[]).length)c.order=local.order;
+  local.like.forEach(t=>{if(!c.like.includes(t)&&!c.avoid.includes(t)&&(t==='party'&&c.feat.some(x=>['karaoke','dance'].includes(x))||['bar','show'].includes(t)&&c.feat.some(x=>['jazz','live'].includes(x))))c.like.push(t)});
   if(c.cuisine.length&&!c.like.includes("food")&&!c.avoid.includes("food"))c.like.push("food");
   quick.forEach(q=>QUICK.find(x=>x.id===q).types.forEach(t=>{if(!c.like.includes(t)&&!c.avoid.includes(t))c.like.push(t)}));
   return c;
@@ -2007,7 +2054,8 @@ function build(){
   const onlyEat=/(просто|только)\s+(поужинать|поесть|покушать|пообедать|в ресторан|ужин|посидеть в ресторане)/.test(wl);
   let maxStops=pr.maxStops||(onlyEat?1:!likeCore.length?3:likeCore.every(t=>t==="food")?2:Math.min(4,likeCore.length+1));
   maxStops=Math.max(1,Math.min(maxStops,Math.ceil(f.hours/1.3)));
-  const near=pr.compact?1.8:2.6,span=pr.compact?2.4:3.6;
+  const mv=f.move||"metro";
+  const near=pr.compact?1.8:mv==="walk"?1.6:mv==="car"?4.5:mv==="bus"?3:2.6,span=pr.compact?2.4:mv==="walk"?2.6:mv==="car"?7:mv==="bus"?4.5:3.6;
   const strictExtra=likeCore.filter(t=>t!=="food").length>0;
   // для первого места смотрим, есть ли рядом то, что ещё хочется: иначе маршрут оборвётся на одной точке
   const extraOK=q=>openToday(q)&&q.who.includes(f.who)&&n<=q.maxGroup&&!pr.exclude.includes(q.id)&&!pr.avoid.includes(q.type)&&
@@ -2017,8 +2065,13 @@ function build(){
   const cuExists=cuWant.length&&PLACES.some(p=>LT(p).includes("food")&&cuHit(p,cuWant)&&openToday(p)&&p.who.includes(f.who)&&n<=p.maxGroup&&!pr.exclude.includes(p.id));
   const bTypes=new Set(PLACES.filter(p=>ASK.includes(p.type)&&((pr.boost||[]).includes(p.id)||pr.include.includes(p.id))).map(p=>p.type));
   const anchors=PLACES.filter(p=>p.night&&((pr.boost||[]).includes(p.id)||pr.include.includes(p.id))&&openToday(p)&&p.oH*60>=startMin&&p.oH*60+p.minutes<=endMin+10);
+  const featWant=pr.feat||[];
+  const featExists=featWant.length&&PLACES.some(p=>hasFeat(p,featWant)&&openToday(p)&&p.who.includes(f.who)&&n<=p.maxGroup&&!pr.exclude.includes(p.id));
+  const ord=(pr.order||[]).filter(t=>pr.like.includes(t));
   for(let g=0;g<maxStops;g++){
     let best=null,bestS=-1e9,bestInfo=null;
+    const featDone=!featWant.length||route.some(r=>hasFeat(r.p,featWant));
+    const nextT=ord.find(t=>!route.some(r=>LT(r.p).includes(t)&&(!["bar","show"].includes(t)||!featWant.some(x=>["jazz","live"].includes(x))||hasFeat(r.p,featWant))));
     const left=endMin-t,estStops=Math.max(1,Math.round(left/95)),ideal=(B-spent)/estStops;
     const hasFood=route.some(r=>r.p.type==="food"),last=route[route.length-1];
     const hasSight=route.some(r=>["walk","view","culture"].includes(r.p.type));
@@ -2035,8 +2088,9 @@ function build(){
       if(strictExtra&&!forced&&!boosted&&!LT(p).some(t=>pr.like.includes(t)))continue;
       if(strictExtra&&!forced&&!boosted&&route.some(r=>isEat(r.p))&&!LT(p).some(t=>pr.like.includes(t)&&t!=="food"))continue;
       if(p.chain&&pr.branch&&pr.branch[p.chain]&&pr.branch[p.chain]!==p.id&&!forced)continue;
-      if(cur&&!forced&&!p.far&&!cur.far&&dist(p,cur)>(boosted?7:near))continue;
-      if(route.length&&!forced&&!p.far&&!route[0].p.far&&dist(p,route[0].p)>(boosted?8:span))continue;
+      const ordStep=nextT&&LT(p).includes(nextT)?1.5:0;
+      if(cur&&!forced&&!p.far&&!cur.far&&dist(p,cur)>(boosted?7:near+ordStep))continue;
+      if(route.length&&!forced&&!p.far&&!route[0].p.far&&dist(p,route[0].p)>(boosted?8:span+ordStep))continue;
       if(isFood&&!forced&&!boosted&&cuExists&&!cuHit(p,cuWant))continue;
       if(level===1&&!forced&&!boosted&&TIERED(p)&&tierOf(p)===3)continue;
       if(!forced&&pr.avoid.includes(p.type))continue;
@@ -2053,7 +2107,21 @@ function build(){
       const cost=p.check*n;
       if(spent+cost>B)continue;
       if(anchors.some(a=>a!==p&&!used.has(a.id)&&end+travel(p,a).min>a.cH*60-a.minutes))continue;
+      // формат: «бар с джазом» — бар без джаза не подходит
+      if(featExists&&!featDone&&!forced&&!boosted){
+        const carrier=LT(p).some(t=>["bar","show","party"].includes(t));
+        if(carrier&&!hasFeat(p,featWant))continue;
+      }
+      if(featExists&&featDone&&!forced&&!boosted&&LT(p).some(t=>["bar","show"].includes(t))&&!hasFeat(p,featWant)&&!route.some(r=>LT(r.p).includes("food")&&isEat(r.p)&&p.type==="bar"&&pr.like.includes("food")))continue;
+      // порядок: сначала то, что человек назвал первым
+      if(nextT&&!forced){
+        const isNext=LT(p).includes(nextT),isLater=ord.some(t=>t!==nextT&&LT(p).includes(t));
+        if(!isNext&&isLater)continue;
+      }
       let s=0;
+      if(featWant.length&&hasFeat(p,featWant)){if(featDone&&!forced&&!boosted&&LT(p).some(t=>["bar","show","party"].includes(t))&&!(pr.like.includes("party")&&p.type==="party"))continue;s+=12}
+      if(featWant.length&&pr.like.includes("bar")&&!pr.like.includes("show")&&!LT(p).includes("bar")&&LT(p).includes("show"))s-=5;
+      if(nextT&&LT(p).includes(nextT))s+=8;
       if(LT(p).some(t=>pr.like.includes(t)))s+=7;else if(!pr.like.length&&["walk","view","food","bar"].includes(p.type))s+=2;
       if(forced)s+=25;
       if(boosted)s+=9;
@@ -2072,7 +2140,7 @@ function build(){
       if(!p.night&&cl>=30&&cl<360&&["walk","view","culture"].includes(p.type)&&!LT(p).some(t=>pr.like.includes(t)))continue;
       if(p.night)s+=f.who==="date"?5:3;
       if(!p.night&&(cl>=1410||cl<360)&&["walk","view","culture"].includes(p.type)&&!LT(p).some(t=>pr.like.includes(t)))s-=4;
-      s-=(leg.mode==="car"?leg.min/14:leg.mode==="metro"?leg.min/(pr.compact?2.2:3.2)+3:leg.min/6);
+      s-=(leg.mode==="car"?leg.min/(mv==="car"?9:14):leg.mode==="metro"||leg.mode==="bus"?leg.min/(pr.compact?2.2:3.2)+3:leg.min/(mv==="walk"?4:6));
       if(hasFood&&!LT(p).some(t=>pr.like.includes(t))&&["bar","view","walk"].includes(p.type))s+=2;
       if(!route.length&&maxStops>=2&&!forced){const a=around(p);s+=a?Math.min(a,3)*1.2:-6}
       s-=morning?wait/40:wait/8;if(p.night&&wait>40)s-=wait/3;
@@ -2136,7 +2204,9 @@ function stepHTML(i){
   if(i===1)return '<h2 class="q">Во сколько выходишь и на сколько?</h2><p class="qsub">Можно выйти в любое время суток, хоть в два ночи. Часы работы мест учтём сами.</p><div class="two">'+
     '<div><label class="lbl" for="sIn">Начало</label><div class="readout neon" id="sOut">'+hm(f.start*60)+'</div><input type="range" id="sIn" min="0" max="23.5" step="0.5" value="'+f.start+'"><div class="ticks"><span>00:00</span><span>12:00</span><span>23:30</span></div></div>'+
     '<div><label class="lbl" for="hIn">Сколько гуляем</label><div class="readout" id="hOut">'+hoursTxt(f.hours)+'</div><input type="range" id="hIn" min="1" max="10" step="0.5" value="'+f.hours+'"><div class="ticks"><span>1 ч</span><span>10 ч</span></div></div></div>'+
-    '<p class="hint" id="endOut" style="margin-top:22px">Закончим около '+hm((f.start+f.hours)*60)+'</p>';
+    '<p class="hint" id="endOut" style="margin-top:22px">Закончим около '+hm((f.start+f.hours)*60)+'</p>'+
+    '<span class="lbl" style="margin-top:26px">Как будете передвигаться</span><div class="chips movechips">'+Object.keys(MOVE).map(k=>'<button class="chip" data-move="'+k+'" aria-pressed="'+(f.move===k)+'"><span class="d"></span>'+MOVE[k]+'</button>').join("")+'</div>'+
+    '<p class="hint">Под это подберём расстояния между местами: пешком — всё рядом, на машине можно дальше.</p>';
   if(i===2)return '<h2 class="q">Сколько готов потратить?</h2><p class="qsub">'+(f.who==="date"?"На двоих":f.who==="solo"?"На себя":"На всю компанию из "+f.n+" человек")+'. Впиши свою сумму, под неё и подберём места.</p>'+
     '<label class="lbl" for="bIn">Бюджет</label><div class="money"><input id="bIn" inputmode="numeric" autocomplete="off" placeholder="5 000" value="'+esc(fmtNum(f.budget))+'"><span>₽</span></div><p class="err" id="bErr"></p>';
   if(i===3)return '<h2 class="q">Чего хочется?</h2><p class="qsub">Напиши своими словами или скажи голосом. Можно и просто выбрать кнопки ниже.</p>'+
@@ -2156,6 +2226,7 @@ function renderStep(dir){
 $("#stepBody").addEventListener("click",e=>{
   const el=e.target.closest("button");if(!el)return;const f=state.form;
   if(el.dataset.who){f.who=el.dataset.who;f.n=f.who==="date"?2:f.who==="solo"?1:Math.max(2,f.n);renderStep(0)}
+  else if(el.dataset.move){f.move=el.dataset.move;document.querySelectorAll("[data-move]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.move===f.move))}
   else if(el.dataset.quick){const q=el.dataset.quick;f.quick=f.quick.includes(q)?f.quick.filter(x=>x!==q):[...f.quick,q];el.setAttribute("aria-pressed",f.quick.includes(q))}
 });
 $("#stepBody").addEventListener("input",e=>{
@@ -2241,7 +2312,7 @@ function renderRoute(animate){
   $("#feedback").hidden=false;
   let k=0,out='<li class="meet" style="--i:'+(k++)+'">Встречаетесь у первой точки в '+hm(r[0].arrive)+'</li>';
   r.forEach((x,i)=>{
-    if(i>0)out+='<li class="leg '+x.leg.mode+'" style="--i:'+(k++)+'"><span>'+(x.leg.mode==="walk"?(x.leg.km<0.1?"рядом, пара минут пешком":"пешком "+x.leg.min+" мин, "+kmTxt(x.leg.km)):x.leg.mode==="car"?"на машине или такси за город ≈ "+x.leg.min+" мин":"на метро или такси ≈ "+x.leg.min+" мин")+'</span></li>';
+    if(i>0)out+='<li class="leg '+x.leg.mode+'" style="--i:'+(k++)+'"><span>'+legTxt(x.leg)+'</span></li>';
     const c=state.calls.find(c=>c.r===x);
     let badge=x.p.booking?'<span class="badge need">Нужна бронь</span>':x.p.tickets?'<span class="badge need">Билеты онлайн</span>':'<span class="badge">Можно без брони</span>';
     if(c&&["ok","shift","selfok","sent"].includes(c.status))badge='<span class="badge need">Забронировано</span>';
@@ -3042,7 +3113,30 @@ let TILE_READY=false;
     im.referrerPolicy="strict-origin-when-cross-origin";im.src=u;
   });
 })();
+/* линии по настоящим улицам: пешие и автомобильные маршруты OpenStreetMap; метро рисуем пунктиром напрямую */
+const PATHS={};
+async function streetPath(a,b,mode){
+  if(mode==="metro"||a.far||b.far)return null;
+  const prof=mode==="walk"?"routed-foot":"routed-car",key=prof+a.id+">"+b.id;
+  if(PATHS[key]!==undefined)return PATHS[key];
+  try{
+    const r=await Promise.race([fetch("https://routing.openstreetmap.de/"+prof+"/route/v1/driving/"+a.lon+","+a.lat+";"+b.lon+","+b.lat+"?overview=full&geometries=geojson"),sleep(6000).then(()=>null)]);
+    const j=r&&r.ok?await r.json():null;const c=j&&j.routes&&j.routes[0]&&j.routes[0].geometry.coordinates;
+    return PATHS[key]=c&&c.length>1?c.map(x=>[x[1],x[0]]):null;
+  }catch(_){return PATHS[key]=null}
+}
+function yandexLink(route){
+  const mv=state.form.move||"metro",rtt=mv==="walk"?"pd":mv==="car"?"auto":"mt";
+  return "https://yandex.ru/maps/?rtext="+route.map(x=>x.p.lat.toFixed(6)+","+x.p.lon.toFixed(6)).join("~")+"&rtt="+rtt+"&ll="+route[0].p.lon.toFixed(5)+","+route[0].p.lat.toFixed(5)+"&z=13";
+}
+function renderYandex(route){
+  const el=$("#ymaps");if(!el)return;
+  if(!route.length||route.length<2){el.hidden=true;return}
+  el.hidden=false;el.href=yandexLink(route);
+  el.querySelector("span").textContent="Построить маршрут в Яндекс Картах · "+MOVE[state.form.move||"metro"].toLowerCase();
+}
 function drawMap(route){
+  renderYandex(route);
   const box=$("#map");
   if(LMAP){try{LMAP.remove()}catch(_){}LMAP=null}
   if(!window.L||TILE_FAIL||!route.length){box.innerHTML=mapSVG(route)+(route.length&&(TILE_FAIL||!window.L)?'<p class="map-note">Живая карта не загрузилась: нет связи с сервером карт'+(/claude|anthropic/.test(location.hostname)||location.protocol==="blob:"||window.self!==window.top?' или это превью внутри Claude, где внешние карты закрыты':'')+'. <button class="btn" type="button" id="mapRetry">Попробовать снова</button></p>':'');const rb=$("#mapRetry");if(rb)rb.addEventListener("click",()=>{TILE_IDX=0;TILE_FAIL=false;TILE_OK=false;drawMap(route);if(LMAP&&LMAP._kushFit)setTimeout(LMAP._kushFit,60)});return false}
@@ -3062,8 +3156,10 @@ function drawMap(route){
   const pts=route.map(x=>[x.p.lat,x.p.lon]);
   for(let i=1;i<route.length;i++){
     const walk=route[i].leg.mode==="walk";
-    L.polyline([pts[i-1],pts[i]],{color:"#B6FF2E",weight:walk?5:4,opacity:.95,dashArray:walk?null:"9 9",lineCap:"round",className:"kush-route"}).addTo(m)
-      .bindTooltip(walk?"пешком "+route[i].leg.min+" мин":route[i].leg.mode==="car"?"на машине ≈ "+route[i].leg.min+" мин":"метро или такси ≈ "+route[i].leg.min+" мин",{sticky:true,className:"kush-tip"});
+    const ln=L.polyline([pts[i-1],pts[i]],{color:"#B6FF2E",weight:walk?5:4,opacity:.95,dashArray:walk?null:"9 9",lineCap:"round",className:"kush-route"}).addTo(m);
+    streetPath(route[i-1].p,route[i].p,route[i].leg.mode).then(g=>{if(g&&LMAP===m){ln.setLatLngs(g);ln.setStyle({dashArray:walk?null:"2 8"})}});
+    ln
+      .bindTooltip(legTxt(route[i].leg),{sticky:true,className:"kush-tip"});
   }
   route.forEach((x,i)=>{
     const c=TYPE_COLOR(x.p.type);
