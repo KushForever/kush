@@ -219,6 +219,7 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 .leg.metro::before{background:repeating-linear-gradient(to bottom,var(--neon) 0 6px,transparent 6px 11px);box-shadow:none}
 .leg span{margin-left:22px}
 .ymaps{display:flex;width:calc(100% - 8px);margin:8px 4px 4px;gap:8px;justify-content:center;text-decoration:none;color:var(--text)}.ymaps[hidden]{display:none}
+.alert{border:1px solid #FFB547;background:rgba(255,181,71,.08);color:var(--text);border-radius:16px;padding:14px 16px;margin:0 0 18px;font-size:15px;line-height:1.45}.alert[hidden]{display:none}.alert b{color:#FFB547}
 .mapcard{position:sticky;top:16px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:8px;overflow:hidden}
 .mapcard #map>svg{display:block;width:100%;height:auto}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 10px 6px;font-size:12px;color:var(--muted)}
@@ -1345,6 +1346,7 @@ body[data-screen="s-reg"] .foot-note .link,body[data-screen="s-home"] .foot-note
         <button class="btn" id="btnRebuild">Другой вариант</button>
       </div>
     </div>
+    <div class="alert" id="rAlert" role="status" hidden></div>
     <div class="stats" id="stats"></div>
     <div class="r-grid">
       <div>
@@ -1841,7 +1843,8 @@ function localParse(text,quick){
     if(order.includes("bar")&&order.includes("show")&&feat.has("jazz"))order=order.filter(t=>t!=="show");
     if(order.length>=2)s.push("порядок: "+order.map(t=>TYPES[t].toLowerCase()).join(" → "));else order=[];
   }
-  return {feat:[...feat],order,like:[...like],avoid:[...avoid],include:[],exclude:[...exclude],boost:[...boost],cheap,lux,cuisine:[...cuisine],cuisineAvoid:[...cuisineAvoid],summary:s.length?"Понял так: "+s.join("; ")+".":""};
+  const namedOnly=boost.size>0&&like.size<=1&&!quick.length&&low.replace(/хочу|сходить|пойти|в |на |посетить|съездить|давай/g,"").trim().split(/\s+/).length<=3;
+  return {namedOnly,feat:[...feat],order,like:[...like],avoid:[...avoid],include:[],exclude:[...exclude],boost:[...boost],cheap,lux,cuisine:[...cuisine],cuisineAvoid:[...cuisineAvoid],summary:s.length?"Понял так: "+s.join("; ")+".":""};
 }
 function placeList(){return PLACES.map(p=>p.id+" — "+p.name+" — "+p.type).join("\n")}
 function cleanPrefs(v){
@@ -1849,7 +1852,7 @@ function cleanPrefs(v){
   const arr=(a,ok)=>Array.isArray(a)?a.filter(x=>ok(x)):[];
   return {like:arr(v.like,x=>T.includes(x)),avoid:arr(v.avoid,x=>T.includes(x)),include:arr(v.include,x=>ids.has(x)),exclude:arr(v.exclude,x=>ids.has(x)),
     feat:arr(v.feat,x=>x in FEAT_KW),order:arr(v.order,x=>T.includes(x)),
-    cheap:!!v.cheap,lux:!!v.lux,cuisine:arr(v.cuisine,x=>CU_TAGS.includes(x)),cuisineAvoid:arr(v.cuisineAvoid,x=>CU_TAGS.includes(x)),summary:typeof v.summary==="string"?v.summary.slice(0,220):"",
+    namedOnly:!!v.namedOnly,cheap:!!v.cheap,lux:!!v.lux,cuisine:arr(v.cuisine,x=>CU_TAGS.includes(x)),cuisineAvoid:arr(v.cuisineAvoid,x=>CU_TAGS.includes(x)),summary:typeof v.summary==="string"?v.summary.slice(0,220):"",
     maxStops:typeof v.maxStops==="number"&&v.maxStops>=1&&v.maxStops<=5?Math.round(v.maxStops):null,compact:!!v.compact,
     hours:typeof v.hours==="number"&&v.hours>=1&&v.hours<=12?v.hours:null,start:typeof v.start==="string"&&/^\d{1,2}:\d{2}$/.test(v.start)?v.start:null};
 }
@@ -1894,7 +1897,7 @@ ${placeList()}
   c.boost=local.boost.filter(id=>!c.exclude.includes(id));
   c.cuisine=[...new Set([...(c.cuisine||[]),...local.cuisine])];c.cuisineAvoid=[...new Set([...(c.cuisineAvoid||[]),...local.cuisineAvoid])];
   c.cuisine=c.cuisine.filter(t=>!c.cuisineAvoid.includes(t));c.lux=c.lux||local.lux;c.cheap=c.cheap||local.cheap;
-  c.feat=[...new Set([...(c.feat||[]),...local.feat])];if(!(c.order||[]).length)c.order=local.order;
+  c.namedOnly=local.namedOnly;c.feat=[...new Set([...(c.feat||[]),...local.feat])];if(!(c.order||[]).length)c.order=local.order;
   local.like.forEach(t=>{if(!c.like.includes(t)&&!c.avoid.includes(t)&&(t==='party'&&c.feat.some(x=>['karaoke','dance'].includes(x))||['bar','show'].includes(t)&&c.feat.some(x=>['jazz','live'].includes(x))))c.like.push(t)});
   if(c.cuisine.length&&!c.like.includes("food")&&!c.avoid.includes("food"))c.like.push("food");
   quick.forEach(q=>QUICK.find(x=>x.id===q).types.forEach(t=>{if(!c.like.includes(t)&&!c.avoid.includes(t))c.like.push(t)}));
@@ -2063,7 +2066,8 @@ function build(){
   maxStops=Math.max(1,Math.min(maxStops,Math.ceil(f.hours/1.3)));
   const mv=f.move||"metro";
   const near=pr.compact?1.8:mv==="walk"?1.6:mv==="car"?4.5:mv==="bus"?3:2.6,span=pr.compact?2.4:mv==="walk"?2.6:mv==="car"?7:mv==="bus"?4.5:3.6;
-  const strictExtra=likeCore.filter(t=>t!=="food").length>0;
+  const strictExtra=likeCore.filter(t=>t!=="food").length>0&&!pr.namedOnly;
+  if(pr.namedOnly&&!pr.maxStops)maxStops=Math.max(maxStops,Math.min(3,Math.ceil(f.hours/1.6)));
   // для первого места смотрим, есть ли рядом то, что ещё хочется: иначе маршрут оборвётся на одной точке
   const extraOK=q=>openToday(q)&&q.who.includes(f.who)&&n<=q.maxGroup&&!pr.exclude.includes(q.id)&&!pr.avoid.includes(q.type)&&
     (strictExtra?LT(q).some(t=>t!=="food"&&pr.like.includes(t)):["bar","view","walk","party","show","culture"].includes(q.type)&&!(COLD&&isOut(q)));
@@ -2130,7 +2134,8 @@ function build(){
       if(featWant.length&&hasFeat(p,featWant)){if(featDone&&!forced&&!boosted&&LT(p).some(t=>["bar","show","party"].includes(t))&&!(pr.like.includes("party")&&p.type==="party"))continue;s+=12}
       if(featWant.length&&pr.like.includes("bar")&&!pr.like.includes("show")&&!LT(p).includes("bar")&&LT(p).includes("show"))s-=5;
       if(nextT&&LT(p).includes(nextT))s+=8;
-      if(LT(p).some(t=>pr.like.includes(t)))s+=7;else if(!pr.like.length&&["walk","view","food","bar"].includes(p.type))s+=2;
+      if(LT(p).some(t=>pr.like.includes(t)))s+=7;
+      if(pr.namedOnly&&!route.some(r=>LT(r.p).some(t=>pr.like.includes(t)))&&LT(p).some(t=>pr.like.includes(t)))s+=8;else if(!pr.like.length&&["walk","view","food","bar"].includes(p.type))s+=2;
       if(forced)s+=25;
       if(boosted)s+=9;
       if(ASK.includes(p.type)&&LT(p).some(t=>pr.like.includes(t)))s+=4;
@@ -2314,6 +2319,7 @@ function renderRoute(animate){
   const tags=[whoLabel(f),hm(res.startMin)+"–"+hm(res.startMin+f.hours*60),hoursTxt(f.hours)];
   $("#rTags").innerHTML=tags.map(t=>"<span>"+esc(t)+"</span>").join("");
   $("#rUnderstood").textContent=state.prefs.summary||"";
+  {const nm=namedMiss(res).trim(),al=$("#rAlert");al.hidden=!nm;al.innerHTML=nm?"<b>Важно.</b> "+esc(nm):""}
   const finish=r.length?r[r.length-1].end:res.startMin;
   const km=r.reduce((s,x)=>s+x.leg.km,0),bookN=r.filter(x=>x.p.booking||x.p.tickets).length;
   $("#stats").innerHTML=stat("Точек",r.length)+stat("Время",hm(res.startMin)+"–"+hm(finish))+stat("Пешком",kmTxt(km))+stat("Бронь",bookN?bookN+" "+plural(bookN,["место","места","мест"]):"не нужна");
@@ -2351,13 +2357,21 @@ function branchHTML(p,i){
   return '<div class="branches"><p>'+esc(ch.name)+(others.length===1?" есть ещё на одном адресе.":" есть ещё на "+others.length+" адресах.")+' Какой тебе удобнее?</p><div>'+
     others.map(q=>'<button class="chip" type="button" data-branch="'+i+':'+esc(q.id)+'">'+esc(q.area)+'</button>').join("")+'</div></div>';
 }
+const DN=["вс","пн","вт","ср","чт","пт","сб"],DFULL=["воскресенье","понедельник","вторник","среду","четверг","пятницу","субботу"];
+function hoursWords(p){
+  const base=p.open===p.close?"круглосуточно":p.open+"–"+p.close;
+  let d="";if(p.days&&p.days.length<7){const order=[1,2,3,4,5,6,0].filter(x=>p.days.includes(x));const off=[1,2,3,4,5,6,0].filter(x=>!p.days.includes(x));
+    d=off.length===1?"кроме "+DN[off[0]]+", ":order.map(x=>DN[x]).join(", ")+" "}
+  let late="";if(p.late){const ks=Object.keys(p.late);late=", "+ks.map(k=>DN[+k]).join(" и ")+" до "+p.late[ks[0]]}
+  return d+base+late;
+}
 function namedMiss(res){
   const pr=state.prefs||{},ids=[...new Set([...(pr.include||[]),...(pr.boost||[])])].filter(id=>!res.route.some(x=>x.p.id===id));
   if(!ids.length)return "";
   const out=ids.slice(0,2).map(id=>{const p=PLACES.find(q=>q.id===id);if(!p)return "";
-    if(!openToday(p))return " "+p.name+" сегодня закрыт.";
+    if(!openToday(p))return " "+p.name+" сегодня не работает"+(p.days&&!p.days.includes(TODAY.getDay())?" ("+DFULL[TODAY.getDay()]+" — выходной)":"")+". Часы: "+hoursWords(p)+". Пока собрал вечер без него, с похожими местами. Если хочешь именно туда, приходи в другой день: маршрут строится на сегодня.";
     const st=startOf(state.form);
-    if(p.cH*60-(p.minutes||60)<st)return " "+p.name+" сегодня работает до "+hm(p.cH*60)+", а маршрут начинается в "+hm(st)+". Начни раньше, например в "+hm(Math.max(p.oH*60,p.cH*60-(p.minutes||60)-30))+", и он попадёт в маршрут.";
+    if(p.cH*60-(p.minutes||60)<st)return " "+p.name+" сегодня работает до "+hm(p.cH*60)+" (часы: "+hoursWords(p)+"), а маршрут начинается в "+hm(st)+". Начни раньше, например в "+hm(Math.max(p.oH*60,p.cH*60-(p.minutes||60)-30))+", и он попадёт в маршрут.";
     if(p.oH*60>st+state.form.hours*60)return " "+p.name+" открывается в "+hm(p.oH*60)+", после конца маршрута.";
     return " "+p.name+" не уложился в бюджет или время. Попробуй увеличить бюджет или время.";
   });
