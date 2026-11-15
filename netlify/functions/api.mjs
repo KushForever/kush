@@ -420,6 +420,7 @@ export default async function handler(req) {
       ai: AI_KEY ? "включён" : "выключен (нет ANTHROPIC_API_KEY)",
       adminId: ADMIN ? "задан" : "НЕ ЗАДАН",
       secret: SECRET ? "задан" : "НЕ ЗАДАН",
+      instagram: process.env.IG_USER_ID && process.env.IG_TOKEN ? "подключён" : "не подключён (ролики приходят в Telegram)",
     });
   }
   if (path === "/setup") return onSetup(url);

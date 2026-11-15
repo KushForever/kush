@@ -18,3 +18,10 @@
 ## Как добавить фото
 
 На github.com откройте папку `img` → Add file → Upload files → перетащите фото → Commit changes. Через минуту фото на сайте.
+
+## Instagram: ролик дня
+
+1. ИИ-агент (запланированная задача Claude) раз в день делает ролик в Higgsfield и добавляет запись в `content/posts.json`:
+   `{"date":"2026-11-17","video_url":"https://…mp4","caption":"…"}`.
+2. Netlify пересобирает сайт, срабатывает `deploy-succeeded`, и фоновая функция `ig-publish-background` публикует ролик как Reels с пометкой «создано ИИ».
+3. Результат приходит в Telegram. Пока не заданы `IG_USER_ID` и `IG_TOKEN`, ролик просто присылается в Telegram, чтобы выложить вручную.
