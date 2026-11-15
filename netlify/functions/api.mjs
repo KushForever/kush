@@ -100,7 +100,7 @@ async function onBooking(body) {
     `<b>Гость просит забронировать места</b>\n` +
     `Гость: ${guestLine(u, tgUser)}\n` +
     `Повод: ${who(f.who)}, ${n} чел.\n` +
-    `Сегодня, выход в ${esc(cut(f.startText, 10))}\n` +
+    `${esc(cut(f.dateText || "Сегодня", 30))}, выход в ${esc(cut(f.startText, 10))}\n` +
     `Мест забронировать: ${items.length}\n\n` +
     `Гость нажал «Бот бронирует». Робот-звонарь ещё не подключён, поэтому звонишь ты: набери каждое место ниже и нажми результат. ` +
     (tgUser ? `Гостю сразу придёт ответ в Telegram.` : `Гость с сайта: результат сообщи ему по телефону.`) +
@@ -388,7 +388,7 @@ async function onSetup(url) {
   const menu = await tg("setChatMenuButton", { menu_button: { type: "web_app", text: "Маршрут", web_app: { url: base } } });
   const pub = [
     { command: "start", description: "Главное меню" },
-    { command: "route", description: "Собрать маршрут на сегодня" },
+    { command: "route", description: "Собрать маршрут на любой день" },
     { command: "support", description: "Задать вопрос поддержке" },
     { command: "partner", description: "Для заведений: попасть в KUSH" },
     { command: "help", description: "Как это работает" },
@@ -396,9 +396,9 @@ async function onSetup(url) {
   const cmds = await tg("setMyCommands", { commands: pub });
   if (ADMIN) await tg("setMyCommands", { commands: [...pub, { command: "myid", description: "Мой chat id" }], scope: { type: "chat", chat_id: Number(ADMIN) } });
   const desc = await tg("setMyDescription", {
-    description: "👋 Привет! Я KUSH — гид по вечернему Питеру.\n\n🍽 Соберу маршрут на сегодня: рестораны, бары, бани и спа, шоу и прогулки рядом друг с другом.\n💸 Покажу средний чек и что взять.\n📞 Брони возьмём на себя.\n\nЖми «Старт» и поехали ✨",
+    description: "👋 Привет! Я KUSH — гид по вечернему Питеру.\n\n🍽 Соберу маршрут на сегодня или любой другой день: рестораны, бары, бани и спа, шоу и прогулки рядом друг с другом.\n💸 Покажу средний чек и что взять.\n📞 Брони возьмём на себя.\n\nЖми «Старт» и поехали ✨",
   });
-  await tg("setMyShortDescription", { short_description: "Маршрут по Питеру на сегодня и брони без звонков. Сотрудничество: " + PARTNER_MAIL });
+  await tg("setMyShortDescription", { short_description: "Маршрут по Питеру на любой день и брони без звонков. Сотрудничество: " + PARTNER_MAIL });
   return json({
     bot: me.ok ? me.result.username : me.description,
     webhook: hook.ok ? `${base}/api/tg` : hook.description,

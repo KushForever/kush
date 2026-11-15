@@ -220,6 +220,8 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 .leg span{margin-left:22px}
 .ymaps{display:flex;width:calc(100% - 8px);margin:8px 4px 4px;gap:8px;justify-content:center;text-decoration:none;color:var(--text)}.ymaps[hidden]{display:none}
 .alert{border:1px solid #FFB547;background:rgba(255,181,71,.08);color:var(--text);border-radius:16px;padding:14px 16px;margin:0 0 18px;font-size:15px;line-height:1.45}.alert[hidden]{display:none}.alert b{color:#FFB547}
+.datechips .chip .d,.movechips .chip .d{display:none}.datechips .chip[aria-pressed=true],.movechips .chip[aria-pressed=true]{background:var(--neon);color:#050605;border-color:var(--neon);font-weight:600}
+.datepick{position:relative;cursor:pointer}.datepick input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
 .mapcard{position:sticky;top:16px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:8px;overflow:hidden}
 .mapcard #map>svg{display:block;width:100%;height:auto}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 10px 6px;font-size:12px;color:var(--muted)}
@@ -1536,7 +1538,7 @@ const KUSH_PLACES=[
   {"id": "lencenter", "kw": ["кабаре", "шоу"], "pick": true, "name": "«Ленинград Центр»", "type": "show", "area": "Потёмкинская, 4", "lat": 59.94670, "lon": 30.37140, "minutes": 150, "check": 8000, "open": "19:00", "close": "23:00", "tickets": true, "phone": "+7 (812) 242-99-99", "who": ["date", "friends"], "maxGroup": 20, "note": "кабаре-шоу с акробатами и живым вокалом", "photo": ""},
   {"id": "butman", "also": ["bar"], "kw": ["джаз", "бутман"], "pick": true, "name": "Джаз-клуб Игоря Бутмана", "type": "show", "area": "канал Грибоедова, 7", "lat": 59.93780, "lon": 30.32680, "minutes": 130, "check": 4500, "open": "18:00", "close": "01:00", "booking": true, "phone": "+7 (981) 980-77-78", "unit": "столик на концерт", "who": ["date", "friends", "solo"], "maxGroup": 12, "note": "концерты каждый вечер, кроме понедельника, дресс-код", "photo": ""},
   {"id": "erarta", "kw": ["эрарт", "современн искусств"], "pick": true, "name": "Музей «Эрарта»", "type": "culture", "area": "Васильевский остров", "lat": 59.93181, "lon": 30.25087, "minutes": 90, "check": 800, "open": "10:00", "close": "22:00", "booking": false, "note": "современное искусство", "photo": ""},
-  {"pick": true, "photo": "", "id": "hermitage", "kw": ["эрмитаж", "hermitage", "зимний дворец", "зимнего дворца"], "name": "Государственный Эрмитаж", "type": "culture", "area": "Дворцовая площадь, 2", "lat": 59.93986, "lon": 30.31457, "minutes": 150, "check": 1000, "open": "10:30", "close": "18:00", "late": {"3": "21:00", "5": "21:00"}, "days": [0, 2, 3, 4, 5, 6], "booking": false, "tickets": true, "unit": "билет", "who": ["date", "friends", "solo"], "maxGroup": 20, "note": "главный музей страны в Зимнем дворце; по средам и пятницам открыт до 21:00, вечерний билет дешевле дневного, билеты лучше купить онлайн заранее"},
+  {"pick": true, "photo": "", "id": "hermitage", "kw": ["эрмитаж", "hermitage", "зимний дворец", "зимнего дворца"], "name": "Государственный Эрмитаж", "type": "culture", "area": "Дворцовая площадь, 2", "lat": 59.93986, "lon": 30.31457, "minutes": 120, "check": 1000, "open": "10:30", "close": "18:00", "late": {"3": "21:00", "5": "21:00"}, "days": [0, 2, 3, 4, 5, 6], "booking": false, "tickets": true, "unit": "билет", "who": ["date", "friends", "solo"], "maxGroup": 20, "note": "главный музей страны в Зимнем дворце; по средам и пятницам открыт до 21:00, вечерний билет дешевле дневного, билеты лучше купить онлайн заранее"},
   {"id": "rusmuseum", "kw": ["русский музей", "русском музее"], "pick": true, "name": "Русский музей", "type": "culture", "area": "Михайловский дворец", "lat": 59.93864, "lon": 30.33235, "minutes": 90, "check": 500, "open": "10:00", "close": "18:00", "booking": false, "photo": ""},
 
   /* ---------- город: прогулки и виды ---------- */
@@ -1646,12 +1648,13 @@ const QUICK=[
   {id:"billiard",label:"Бильярд",types:["billiard"]}
 ];
 const toH=s=>{const [h,m]=String(s||"0:0").split(":").map(Number);return (h||0)+(m||0)/60};
-const TODAY=new Date();
+let TODAY=new Date();const REAL_TODAY=new Date();
 function openToday(p){
   if(p.days&&!p.days.includes(TODAY.getDay()))return false;
   if(p.season){const md=(TODAY.getMonth()+1)*100+TODAY.getDate(),[a,b]=p.season.map(v=>{const [m,d]=v.split("-").map(Number);return m*100+d});if(a<=b?(md<a||md>b):(md<a&&md>b))return false}
   return true;
 }
+function timesFor(p){let o=toH(p.open),c=toH(p.late&&p.late[TODAY.getDay()]||p.close);if(p.open===p.close){o=0;c=48}else{if(c<=o)c+=24;if(o<6){o+=24;c+=24}}return [o,c]}
 const PLACES=KUSH_PLACES.map(p=>{
   let o=toH(p.open),c=toH(p.late&&p.late[TODAY.getDay()]||p.close);
   if(p.open===p.close){o=0;c=48}else{if(c<=o)c+=24;if(o<6){o+=24;c+=24}}
@@ -1660,7 +1663,7 @@ const PLACES=KUSH_PLACES.map(p=>{
 
 const state={
   screen:"s-home",step:0,
-  form:{who:"date",n:2,start:19,hours:5,budget:"",wish:"",quick:[],move:"metro"},
+  form:{who:"date",n:2,start:19,hours:5,budget:"",wish:"",quick:[],move:"metro",date:0},
   prefs:{like:[],avoid:[],include:[],exclude:[],boost:[],cheap:false,summary:""},
   seed:1,res:null,calls:[],running:false,vip:{},want:null
 };
@@ -1887,7 +1890,7 @@ include и exclude: id мест из списка ниже, только есл�
 cheap: true, если человек просит подешевле. lux: true, если просит дорогие, статусные места.
 cuisine: какую кухню человек хочет, cuisineAvoid: какую не хочет. Только из списка: jp (японская, суши, роллы), cn (китайская), asian (азиатская в целом), georgian, italian, russian, meat (мясо, стейки, бургеры), fish (рыба, морепродукты), east (плов, восточная), european, german, dessert. Если просит суши или роллы, ставь jp и asian. Не подменяй кухню: просит азиатскую — не предлагай грузинскую.
 summary: одна короткая фраза на «ты», как ты понял запрос, начни с «Понял так:».
-Компания: ${whoLabel(f)}. Начало ${hm(f.start*60)}, ${hoursTxt(f.hours)}.
+Компания: ${whoLabel(f)}. Дата: ${dateWord()}. Начало ${hm(f.start*60)}, ${hoursTxt(f.hours)}.
 Быстрые кнопки, которые он нажал: ${quick.map(q=>QUICK.find(x=>x.id===q).label).join(", ")||"нет"}.
 Места:
 ${placeList()}
@@ -2028,8 +2031,18 @@ ${placeList()}
 const LT=p=>[p.type,...(p.also||[])];
 
 /* ---------- сезон и тип места ---------- */
-const MD=(TODAY.getMonth()+1)*100+TODAY.getDate();
-const COLD=MD>=1015||MD<=415;            // с середины октября до середины апреля долго не гуляем
+let MD=(TODAY.getMonth()+1)*100+TODAY.getDate();
+let COLD=MD>=1015||MD<=415;
+/* дата похода: маршрут можно собрать не только на сегодня */
+const MON=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+function dayAt(off){const d=new Date(REAL_TODAY);d.setHours(12,0,0,0);d.setDate(d.getDate()+off);return d}
+function setDate(off){
+  off=Math.max(0,Math.min(60,off|0));state.form.date=off;TODAY=dayAt(off);
+  MD=(TODAY.getMonth()+1)*100+TODAY.getDate();COLD=MD>=1015||MD<=415;
+  PLACES.forEach(p=>{const [o,c]=timesFor(p);p.oH=o;p.cH=c});
+}
+const dateWord=()=>{const o=state.form.date||0;return o===0?"сегодня":o===1?"завтра":"в "+DFULL[TODAY.getDay()]+", "+TODAY.getDate()+" "+MON[TODAY.getMonth()]};
+const dateShort=()=>{const o=state.form.date||0;return o===0?"Сегодня":o===1?"Завтра":DN[TODAY.getDay()]+", "+TODAY.getDate()+" "+MON[TODAY.getMonth()]};            // с середины октября до середины апреля долго не гуляем
 const INDOOR_SIGHT=["lahta","tauride","botanic"];
 ["magic","illusions","shadows","optics","maf","myhistory"].forEach(id=>{const p=PLACES.find(x=>x.id===id);if(p)p.museum=true});
 ["primo","blackstar"].forEach(id=>{const p=PLACES.find(x=>x.id===id);if(p)p.also=[...new Set([...(p.also||[]),"fun"])]});
@@ -2211,12 +2224,15 @@ function cover(p,i){
 
 /* ---------- мастер ---------- */
 const STEPS=4;
+const isoD=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 function stepHTML(i){
   const f=state.form;
   if(i===0)return '<h2 class="q">С кем идёшь?</h2><p class="qsub">От этого зависят места: на свидание не позовём в караоке на двадцать человек.</p><div class="tiles">'+
     tile("date","Свидание","вдвоём с любимым человеком")+tile("friends","Компания друзей","от 2 до 20 человек")+tile("solo","Один","в своём темпе")+'</div>'+
     (f.who==="friends"?'<div class="block"><label class="lbl" for="nIn">Сколько вас</label><div class="readout neon" id="nOut">'+f.n+' '+plural(f.n,["человек","человека","человек"])+'</div><input type="range" id="nIn" min="2" max="20" step="1" value="'+f.n+'"><div class="ticks"><span>2</span><span>20</span></div></div>':'');
-  if(i===1)return '<h2 class="q">Во сколько выходишь и на сколько?</h2><p class="qsub">Можно выйти в любое время суток, хоть в два ночи. Часы работы мест учтём сами.</p><div class="two">'+
+  if(i===1)return '<h2 class="q">Когда идёшь?</h2><div class="chips datechips">'+[0,1,2,3,4,5,6].map(o=>{const d=dayAt(o);return '<button class="chip" data-date="'+o+'" aria-pressed="'+((f.date||0)===o)+'"><span class="d"></span>'+(o===0?"Сегодня":o===1?"Завтра":DN[d.getDay()]+" "+d.getDate())+'</button>'}).join("")+
+    '<label class="chip datepick"><span class="d"></span>Другая дата<input type="date" id="dateIn" min="'+isoD(dayAt(0))+'" max="'+isoD(dayAt(60))+'" value="'+isoD(dayAt(f.date||0))+'"></label></div>'+
+    '<h2 class="q" style="margin-top:30px">Во сколько и на сколько?</h2><p class="qsub">Можно выйти в любое время суток, хоть в два ночи. Часы работы мест учтём сами.</p><div class="two">'+
     '<div><label class="lbl" for="sIn">Начало</label><div class="readout neon" id="sOut">'+hm(f.start*60)+'</div><input type="range" id="sIn" min="0" max="23.5" step="0.5" value="'+f.start+'"><div class="ticks"><span>00:00</span><span>12:00</span><span>23:30</span></div></div>'+
     '<div><label class="lbl" for="hIn">Сколько гуляем</label><div class="readout" id="hOut">'+hoursTxt(f.hours)+'</div><input type="range" id="hIn" min="1" max="10" step="0.5" value="'+f.hours+'"><div class="ticks"><span>1 ч</span><span>10 ч</span></div></div></div>'+
     '<p class="hint" id="endOut" style="margin-top:22px">Закончим около '+hm((f.start+f.hours)*60)+'</p>'+
@@ -2241,9 +2257,11 @@ function renderStep(dir){
 $("#stepBody").addEventListener("click",e=>{
   const el=e.target.closest("button");if(!el)return;const f=state.form;
   if(el.dataset.who){f.who=el.dataset.who;f.n=f.who==="date"?2:f.who==="solo"?1:Math.max(2,f.n);renderStep(0)}
+  else if(el.dataset.date!==undefined){setDate(+el.dataset.date);document.querySelectorAll("[data-date]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.date===el.dataset.date));const di=$("#dateIn");if(di)di.value=isoD(TODAY)}
   else if(el.dataset.move){f.move=el.dataset.move;document.querySelectorAll("[data-move]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.move===f.move))}
   else if(el.dataset.quick){const q=el.dataset.quick;f.quick=f.quick.includes(q)?f.quick.filter(x=>x!==q):[...f.quick,q];el.setAttribute("aria-pressed",f.quick.includes(q))}
 });
+$("#stepBody").addEventListener("change",e=>{if(e.target.id==="dateIn"&&e.target.value){const [y,m,d]=e.target.value.split("-").map(Number);const t=new Date(y,m-1,d,12);const off=Math.round((t-dayAt(0))/864e5);setDate(off);document.querySelectorAll("[data-date]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.date===off))}});
 $("#stepBody").addEventListener("input",e=>{
   const f=state.form,id=e.target.id;
   if(id==="nIn"){f.n=+e.target.value;$("#nOut").textContent=f.n+" "+plural(f.n,["человек","человека","человек"])}
@@ -2316,7 +2334,7 @@ function renderRoute(animate){
   const res=state.res,f=state.form,r=res.route;
   const h=f.start;const part=h<5?"Ночь":h<12?"Утро":h<17?"День":h<22?"Вечер":"Ночь";
   $("#rTitle").textContent=part+(f.who==="date"?" для двоих":f.who==="solo"?" для себя":" с компанией из "+f.n);
-  const tags=[whoLabel(f),hm(res.startMin)+"–"+hm(res.startMin+f.hours*60),hoursTxt(f.hours)];
+  const tags=[dateShort(),whoLabel(f),hm(res.startMin)+"–"+hm(res.startMin+f.hours*60),hoursTxt(f.hours)];
   $("#rTags").innerHTML=tags.map(t=>"<span>"+esc(t)+"</span>").join("");
   $("#rUnderstood").textContent=state.prefs.summary||"";
   {const nm=namedMiss(res).trim(),al=$("#rAlert");al.hidden=!nm;al.innerHTML=nm?"<b>Важно.</b> "+esc(nm):""}
@@ -2369,9 +2387,9 @@ function namedMiss(res){
   const pr=state.prefs||{},ids=[...new Set([...(pr.include||[]),...(pr.boost||[])])].filter(id=>!res.route.some(x=>x.p.id===id));
   if(!ids.length)return "";
   const out=ids.slice(0,2).map(id=>{const p=PLACES.find(q=>q.id===id);if(!p)return "";
-    if(!openToday(p))return " "+p.name+" сегодня не работает"+(p.days&&!p.days.includes(TODAY.getDay())?" ("+DFULL[TODAY.getDay()]+" — выходной)":"")+". Часы: "+hoursWords(p)+". Пока собрал вечер без него, с похожими местами. Если хочешь именно туда, приходи в другой день: маршрут строится на сегодня.";
+    if(!openToday(p))return " "+p.name+" "+dateWord()+" не работает"+(p.days&&!p.days.includes(TODAY.getDay())?" ("+DFULL[TODAY.getDay()].replace(/у$/,"а")+" — выходной)":"")+". Часы: "+hoursWords(p)+". Пока собрал вечер без него, с похожими местами. Если хочешь именно туда, выбери другую дату на шаге со временем.";
     const st=startOf(state.form);
-    if(p.cH*60-(p.minutes||60)<st)return " "+p.name+" сегодня работает до "+hm(p.cH*60)+" (часы: "+hoursWords(p)+"), а маршрут начинается в "+hm(st)+". Начни раньше, например в "+hm(Math.max(p.oH*60,p.cH*60-(p.minutes||60)-30))+", и он попадёт в маршрут.";
+    if(p.cH*60-(p.minutes||60)<st)return " "+p.name+" "+dateWord()+" работает до "+hm(p.cH*60)+" (часы: "+hoursWords(p)+"), а маршрут начинается в "+hm(st)+". Начни раньше, например в "+hm(Math.max(p.oH*60,p.cH*60-(p.minutes||60)-30))+", и он попадёт в маршрут.";
     if(p.oH*60>st+state.form.hours*60)return " "+p.name+" открывается в "+hm(p.oH*60)+", после конца маршрута.";
     return " "+p.name+" не уложился в бюджет или время. Попробуй увеличить бюджет или время.";
   });
@@ -2674,7 +2692,7 @@ function renderCalls(){
     return '<article class="call" id="call-'+i+'" data-status="'+c.status+'"><header><div class="ring">'+PHONE_ICON+'</div><div><h3><b><i>'+esc(c.r.p.name)+'</i></b></h3><p>'+esc(unitOf(c))+' '+forN(n)+' в <b class="ct">'+hm(c.r.arrive)+'</b></p></div><span class="status">'+statusText(c)+'</span>'+(c.paid?'<span class="tokspent">−1 токен</span>':'')+'</header>'+
       (locked?'':'<div class="seg" role="group" aria-label="Кто звонит">'+(c.mode!=="bot"&&botQueued>=bal?'<button data-mode="bot" data-lock="1" data-i="'+i+'" class="locked" aria-pressed="false" aria-label="Бот позвонит: нужен 1 токен">'+LOCK_ICON+'Бот позвонит</button>':'<button data-mode="bot" data-i="'+i+'" aria-pressed="'+(c.mode==="bot")+'">Бот позвонит</button>')+'<button data-mode="self" data-i="'+i+'" aria-pressed="'+(c.mode==="self")+'">Позвоню сам</button></div>')+
       (self?'<div class="selfbox"><div class="phone">'+(ph?'<b>'+esc(ph)+'</b><button class="btn" data-copy="'+esc(ph)+'">Скопировать номер</button>':'<span class="hint">Номера этого места пока нет в базе. Добавим, когда заполним базу.</span>')+'</div>'+
-        '<p class="say">Что сказать: <b>«Здравствуйте! Хочу забронировать '+esc(unitOf(c))+' '+forN(n)+' сегодня на '+hm(c.r.arrive)+', на имя '+esc(name)+'»</b></p>'+
+        '<p class="say">Что сказать: <b>«Здравствуйте! Хочу забронировать '+esc(unitOf(c))+' '+forN(n)+' '+dateWord()+' на '+hm(c.r.arrive)+', на имя '+esc(name)+'»</b></p>'+
         '<div><button class="btn neon" data-selfok="'+i+'">Готово, забронировал</button></div></div>':'')+
       '<div class="tx">'+c.lines.map(l=>lineHTML(l[0],l[1])).join("")+'</div></article>';
   }).join("");
@@ -2714,7 +2732,7 @@ async function sendBooking(){
   if(!items.length)return null;
   return apiPost("/booking",{
     user:USER||{name:($("#bookName").value||"").trim()},
-    form:{who:state.form.who,n:state.form.n,startText:hm(state.res.startMin)},
+    form:{who:state.form.who,n:state.form.n,startText:hm(state.res.startMin),dateText:dateShort()},
     items
   });
 }
