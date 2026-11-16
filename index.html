@@ -96,7 +96,7 @@ html{scrollbar-color:#2B382B #050605}
 .btn:hover{border-color:var(--muted)}
 .btn:active{transform:scale(.97)}
 .btn.neon{background:var(--neon);border-color:var(--neon);color:var(--neon-ink);box-shadow:0 0 0 0 rgba(182,255,46,0)}
-.btn.neon:hover{box-shadow:0 10px 28px -10px rgba(182,255,46,.55)}
+.btn.neon:hover{box-shadow:0 8px 20px -8px rgba(0,0,0,.6);filter:brightness(1.06)}
 .btn.big{font-size:17px;padding:17px 28px;border-radius:16px}
 .btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
 .btn .arr{transition:transform .2s}.btn:hover .arr{transform:translateX(3px)}
@@ -218,7 +218,7 @@ h1,h2,h3{text-wrap:balance}
 .leg{display:flex;align-items:center;gap:12px;padding:10px 0 10px 28px;font-size:13px;color:var(--muted);position:relative}
 .leg::before{content:"";position:absolute;left:30px;top:0;bottom:0;width:2px;background:var(--neon);opacity:.8}
 .leg.bus::before{background:none;border-left:2px dashed var(--neon);width:0}
-.leg.metro::before{background:repeating-linear-gradient(to bottom,var(--neon) 0 6px,transparent 6px 11px);box-shadow:none}
+.leg.metro::before{background:none;border-left:2px dotted var(--neon);width:0}
 .leg span{margin-left:22px}
 .ymaps{display:flex;width:calc(100% - 8px);margin:8px 4px 4px;gap:8px;justify-content:center;text-decoration:none;color:var(--text)}.ymaps[hidden]{display:none}
 .alert{border:1px solid #FFB547;background:rgba(255,181,71,.08);color:var(--text);border-radius:16px;padding:14px 16px;margin:0 0 18px;font-size:15px;line-height:1.45}.alert[hidden]{display:none}.alert b{color:#FFB547}
@@ -1051,7 +1051,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .paybal b{color:var(--neon);font-family:var(--font-mono)}
 .packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0 14px}
 .pack{position:relative;display:flex;flex-direction:column;gap:4px;border:1px solid var(--line-2);border-radius:16px;padding:16px 14px 14px;background:#070907}
-.pack.hit{border-color:var(--neon);box-shadow:0 0 24px rgba(182,255,46,.14)}
+.pack.hit{border-color:var(--neon)}
 .pack .tag{position:absolute;top:-10px;left:12px;background:var(--neon);color:#050605;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px}
 .pack .n{font-family:var(--font-display);font-size:40px;line-height:1;color:var(--neon)}
 .pack .u{font-size:13px;color:var(--muted)}
