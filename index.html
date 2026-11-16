@@ -172,8 +172,15 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 
 /* загрузка */
 .loading{min-height:60vh;display:grid;place-items:center;text-align:center}
-.loader-line{width:min(460px,80vw);height:120px;margin:0 auto 18px}
-.loader-line path{fill:none;stroke:var(--neon);stroke-width:3;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.6s cubic-bezier(.6,.1,.2,1) infinite;filter:drop-shadow(0 0 6px var(--neon))}
+.kload{position:relative;display:inline-flex;gap:.02em;font-family:var(--font-display);font-weight:900;font-size:clamp(72px,22vw,150px);line-height:.9;letter-spacing:-.04em;color:var(--neon);margin:0 auto 26px;padding-bottom:18px}
+.kload span{display:inline-block;animation:kup 1.5s cubic-bezier(.2,.8,.2,1) infinite;transform-origin:50% 100%}
+.kload span:nth-child(2){animation-delay:.12s}.kload span:nth-child(3){animation-delay:.24s}.kload span:nth-child(4){animation-delay:.36s}
+.kload i{position:absolute;left:0;bottom:0;height:4px;width:100%;background:var(--line-2);border-radius:4px;overflow:hidden}
+.kload i::after{content:"";position:absolute;inset:0;background:var(--neon);transform-origin:0 50%;animation:kbar 1.5s cubic-bezier(.6,.1,.2,1) infinite}
+@keyframes kup{0%,100%{transform:translateY(0)}30%{transform:translateY(-14%) scaleY(1.06)}55%{transform:translateY(0) scaleY(.96)}}
+@keyframes kbar{0%{transform:scaleX(0)}70%,100%{transform:scaleX(1);opacity:0}}
+@media (prefers-reduced-motion:reduce){.kload span,.kload i::after{animation:none}}
+
 @keyframes draw{60%{stroke-dashoffset:0}100%{stroke-dashoffset:-1}}
 @keyframes draw1{to{stroke-dashoffset:0}}
 .loading h2{font-family:var(--font-display);font-size:28px;letter-spacing:-.02em}
@@ -1092,7 +1099,7 @@ input[type=range]::-webkit-slider-thumb{box-shadow:none}
 input[type=range]::-moz-range-thumb{box-shadow:none}
 .wish textarea{border-radius:14px}
 .mic{border-radius:10px}
-.loader-line path{filter:none}
+
 .kick{font-family:var(--font-body);font-size:14px;letter-spacing:0;text-transform:none;color:var(--muted)}
 .tags span{border-radius:8px}
 .stats{}
@@ -1331,7 +1338,7 @@ body[data-screen="s-reg"] .foot-note .link,body[data-screen="s-home"] .foot-note
   <!-- загрузка -->
   <section class="screen" id="s-load" aria-live="polite">
     <div class="loading"><div>
-      <svg class="loader-line" viewBox="0 0 460 120" aria-hidden="true"><path pathLength="1" d="M10 90 L90 90 L130 40 L210 40 L250 80 L330 80 L370 30 L450 30"/></svg>
+      <div class="kload" aria-hidden="true"><span>K</span><span>U</span><span>S</span><span>H</span><i></i></div>
       <h2>Собираем маршрут</h2>
       <p id="loadMsg">Читаем, чего тебе хочется</p>
     </div></div>
