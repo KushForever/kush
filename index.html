@@ -80,7 +80,7 @@ html{scrollbar-color:#2B382B #050605}
 /* шапка */
 .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 0;position:relative;z-index:5}
 .logo{font-family:var(--font-display);font-weight:900;font-size:22px;letter-spacing:.02em;background:none;border:0;display:flex;align-items:center;gap:8px;min-height:44px;padding:0}
-.logo i{width:9px;height:9px;border-radius:50%;background:var(--neon);box-shadow:0 0 12px var(--neon)}
+.logo i{width:9px;height:9px;border-radius:50%;background:var(--neon)}
 .city{font-size:13px;color:var(--muted);border:1px solid var(--line-2);padding:8px 14px;border-radius:999px;min-height:36px;display:inline-flex;align-items:center;gap:6px}
 .city b{color:var(--neon);font-weight:700}
 
@@ -121,7 +121,7 @@ html{scrollbar-color:#2B382B #050605}
 .wiz-top{display:flex;align-items:center;gap:16px;margin-bottom:46px}
 .wiz-top .mono{font-size:13px;color:var(--neon);min-width:58px}
 .bar{flex:1;height:3px;background:var(--line-2);border-radius:3px;overflow:hidden}
-.bar i{display:block;height:100%;background:var(--neon);box-shadow:0 0 12px var(--neon);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.bar i{display:block;height:100%;background:var(--neon);transition:width .5s cubic-bezier(.2,.8,.2,1)}
 .step{animation:stIn .45s cubic-bezier(.2,.8,.2,1);min-height:380px}
 .step.fwd{--dx:40px}.step.back{--dx:-40px}.step.still{animation:none}
 @keyframes stIn{from{opacity:0;transform:translateX(var(--dx,0));filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
@@ -143,8 +143,8 @@ html{scrollbar-color:#2B382B #050605}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:30px;background:transparent;margin:10px 0 2px}
 input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--line-2);border-radius:3px}
 input[type=range]::-moz-range-track{height:3px;background:var(--line-2);border-radius:3px}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--neon);margin-top:-10.5px;box-shadow:0 0 16px rgba(182,255,46,.6);border:0}
-input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--neon);box-shadow:0 0 16px rgba(182,255,46,.6);border:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--neon);margin-top:-10.5px;box-shadow:0 2px 8px rgba(0,0,0,.5);border:0}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--neon);box-shadow:0 2px 8px rgba(0,0,0,.5);border:0}
 .ticks{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:12px;color:var(--muted)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:36px}
 .money{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--line-2);padding-bottom:8px;transition:border-color .2s}
@@ -185,13 +185,15 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 .r-head h2{font-family:var(--font-display);font-weight:900;font-size:clamp(32px,5vw,56px);letter-spacing:-.04em;line-height:1;margin:4px 0 14px;text-wrap:balance}
 .tags{display:flex;flex-wrap:wrap;gap:6px}
 .tags span{font-size:13px;border:1px solid var(--line-2);border-radius:999px;padding:4px 10px;color:var(--muted)}
-.understood{margin-top:12px;font-size:15px;color:var(--text);max-width:62ch;border-left:2px solid var(--neon);padding-left:12px}
+.understood{margin-top:14px;font-size:15px;line-height:1.45;color:var(--muted);max-width:62ch;text-wrap:pretty}
 .understood:empty{display:none}
+p,.note,.stop .pnote{text-wrap:pretty}
+h1,h2,h3{text-wrap:balance}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:26px}
-.stat{background:var(--panel);padding:14px 16px}
-.stat small{display:block;font-size:13px;color:var(--muted)}
-.stat b{font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.stat{display:inline-flex;align-items:baseline;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:14px}
+.stat small{font-size:14px;color:var(--muted);order:2}.stat small:empty,.stat b:empty{display:none}
+.stat b{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text)}
 .r-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:28px;align-items:start}
 .tl{list-style:none;position:relative}
 .tl>li{animation:rise .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*70ms)}
@@ -214,8 +216,8 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 .link{background:none;border:0;font-size:14px;font-weight:600;color:var(--muted);min-height:44px;padding:0 4px;display:inline-flex;align-items:center;gap:6px;text-decoration:underline dashed var(--line-2);text-underline-offset:5px}
 .link:hover{color:var(--text);text-decoration-color:var(--text)}
 .leg{display:flex;align-items:center;gap:12px;padding:10px 0 10px 28px;font-size:13px;color:var(--muted);position:relative}
-.leg::before{content:"";position:absolute;left:30px;top:0;bottom:0;width:2px;background:var(--neon);box-shadow:0 0 8px var(--neon);opacity:.7}
-.leg.bus::before{background:repeating-linear-gradient(to bottom,var(--neon) 0 10px,transparent 10px 14px);box-shadow:none}
+.leg::before{content:"";position:absolute;left:30px;top:0;bottom:0;width:2px;background:var(--neon);opacity:.8}
+.leg.bus::before{background:none;border-left:2px dashed var(--neon);width:0}
 .leg.metro::before{background:repeating-linear-gradient(to bottom,var(--neon) 0 6px,transparent 6px 11px);box-shadow:none}
 .leg span{margin-left:22px}
 .ymaps{display:flex;width:calc(100% - 8px);margin:8px 4px 4px;gap:8px;justify-content:center;text-decoration:none;color:var(--text)}.ymaps[hidden]{display:none}
@@ -309,7 +311,7 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
   .r-grid,.b-grid{grid-template-columns:1fr}
   .mapcard{position:relative;top:0;order:-1}
   .side{position:relative;top:0}
-  .stats{grid-template-columns:repeat(2,1fr)}
+  .stats{gap:6px}
 }
 @media (max-width:760px){
   .home-photo{width:auto;left:-20px;right:-20px;top:-84px;bottom:auto;height:72%;-webkit-mask-image:linear-gradient(180deg,#000 55%,transparent 100%);mask-image:linear-gradient(180deg,#000 55%,transparent 100%)}
@@ -1023,7 +1025,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .lmap .leaflet-control-zoom a{width:44px;height:44px;line-height:44px;font-size:22px}
 .lmap .osm-dark{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.88) saturate(.5)}
 .kush-route{filter:drop-shadow(0 0 5px rgba(182,255,46,.85))}
-.kush-pin span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#050605;border:3px solid var(--c);color:var(--c);font:700 14px/1 var(--font-mono);box-shadow:0 0 12px color-mix(in srgb,var(--c) 55%,transparent)}
+.kush-pin span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#050605;border:3px solid var(--c);color:var(--c);font:700 14px/1 var(--font-mono);box-shadow:0 2px 6px rgba(0,0,0,.55)}
 .leaflet-tooltip.kush-tip{background:rgba(5,6,5,.88);border:1px solid #2a352a;color:#eef2ee;font:600 13px/1.2 var(--font-body);padding:5px 8px;border-radius:8px;box-shadow:none}
 .leaflet-tooltip.kush-tip::before{display:none}
 
@@ -1093,7 +1095,7 @@ input[type=range]::-moz-range-thumb{box-shadow:none}
 .loader-line path{filter:none}
 .kick{font-family:var(--font-body);font-size:14px;letter-spacing:0;text-transform:none;color:var(--muted)}
 .tags span{border-radius:8px}
-.stats{border-radius:14px}
+.stats{}
 .stop{border-radius:16px}
 .stop:hover{transform:none}
 .stop:hover .cover svg,.stop:hover .cover img{transform:none}
@@ -1536,7 +1538,7 @@ const KUSH_PLACES=[
   {"pick": true, "photo": "", "id": "jazzberry", "kw": ["jazzberry", "джазберри"], "name": "Ресторан Jazzberry", "type": "food", "also": ["bar"], "feat": ["jazz", "live"], "area": "Синопская набережная, 52", "lat": 59.9302, "lon": 30.3995, "minutes": 120, "check": 2500, "open": "12:00", "close": "00:00", "booking": true, "unit": "столик", "who": ["date", "friends"], "maxGroup": 10, "note": "ресторан с европейской кухней, джазовые концерты по четвергам, пятницам и субботам", "cu": ["european"]},
   {"id": "greenflow", "kw": ["терм", "green flow"], "pick": true, "name": "Green Flow Lakhta Park", "type": "relax", "area": "Лахта", "lat": 59.99800, "lon": 30.14200, "minutes": 150, "check": 3500, "open": "10:00", "close": "22:00", "tickets": true, "who": ["date", "solo", "friends"], "maxGroup": 8, "note": "термальный комплекс с бассейнами у Лахтинского разлива", "photo": ""},
   {"id": "lencenter", "kw": ["кабаре", "шоу"], "pick": true, "name": "«Ленинград Центр»", "type": "show", "area": "Потёмкинская, 4", "lat": 59.94670, "lon": 30.37140, "minutes": 150, "check": 8000, "open": "19:00", "close": "23:00", "tickets": true, "phone": "+7 (812) 242-99-99", "who": ["date", "friends"], "maxGroup": 20, "note": "кабаре-шоу с акробатами и живым вокалом", "photo": ""},
-  {"id": "butman", "also": ["bar"], "kw": ["джаз", "бутман"], "pick": true, "name": "Джаз-клуб Игоря Бутмана", "type": "show", "area": "канал Грибоедова, 7", "lat": 59.93780, "lon": 30.32680, "minutes": 130, "check": 4500, "open": "18:00", "close": "01:00", "booking": true, "phone": "+7 (981) 980-77-78", "unit": "столик на концерт", "who": ["date", "friends", "solo"], "maxGroup": 12, "note": "концерты каждый вечер, кроме понедельника, дресс-код", "photo": ""},
+  {"id": "butman", "also": ["bar"], "kw": ["бутман", "бутмана"], "pick": true, "name": "Джаз-клуб Игоря Бутмана", "type": "show", "area": "канал Грибоедова, 7", "lat": 59.93780, "lon": 30.32680, "minutes": 130, "check": 4500, "open": "18:00", "close": "01:00", "booking": true, "phone": "+7 (981) 980-77-78", "unit": "столик на концерт", "who": ["date", "friends", "solo"], "maxGroup": 12, "note": "концерты каждый вечер, кроме понедельника, дресс-код", "photo": ""},
   {"id": "erarta", "kw": ["эрарт", "современн искусств"], "pick": true, "name": "Музей «Эрарта»", "type": "culture", "area": "Васильевский остров", "lat": 59.93181, "lon": 30.25087, "minutes": 90, "check": 800, "open": "10:00", "close": "22:00", "booking": false, "note": "современное искусство", "photo": ""},
   {"pick": true, "photo": "", "id": "hermitage", "kw": ["эрмитаж", "hermitage", "зимний дворец", "зимнего дворца"], "name": "Государственный Эрмитаж", "type": "culture", "area": "Дворцовая площадь, 2", "lat": 59.93986, "lon": 30.31457, "minutes": 120, "check": 1000, "open": "10:30", "close": "18:00", "late": {"3": "21:00", "5": "21:00"}, "days": [0, 2, 3, 4, 5, 6], "booking": false, "tickets": true, "unit": "билет", "who": ["date", "friends", "solo"], "maxGroup": 20, "note": "главный музей страны в Зимнем дворце; по средам и пятницам открыт до 21:00, вечерний билет дешевле дневного, билеты лучше купить онлайн заранее"},
   {"id": "rusmuseum", "kw": ["русский музей", "русском музее"], "pick": true, "name": "Русский музей", "type": "culture", "area": "Михайловский дворец", "lat": 59.93864, "lon": 30.33235, "minutes": 90, "check": 500, "open": "10:00", "close": "18:00", "booking": false, "photo": ""},
@@ -1619,8 +1621,8 @@ const KUSH_PLACES=[
   {"id": "aiki", "pick": true, "kw": ["айки", "aiki", "кофе с видом"], "name": "AIKI terrasa", "type": "coffee", "area": "Аптекарская набережная, 18с1, 9 этаж", "lat": 59.97822, "lon": 30.31642, "minutes": 50, "check": 1300, "open": "10:00", "close": "22:30", "booking": false, "unit": "столик", "maxGroup": 12, "note": "кофейня на крыше с панорамой набережной", "photo": ""},
   {"id": "futurist", "pick": true, "kw": ["футурист", "futurist"], "name": "Futurist", "type": "food", "area": "Барочная улица, 6с1", "lat": 59.96512, "lon": 30.28456, "minutes": 90, "check": 2000, "open": "10:00", "close": "23:00", "booking": true, "unit": "столик", "maxGroup": 12, "phone": "+7 (812) 555-44-44", "note": "необистро Алексея Алексеева", "photo": ""},
   {"id": "siesta", "pick": true, "kw": ["сиеста", "siesta", "фиеста"], "name": "Siesta Fiesta", "type": "food", "area": "улица Академика Павлова, 5В", "lat": 59.9742, "lon": 30.3088, "minutes": 100, "check": 2500, "open": "12:00", "close": "23:00", "booking": true, "unit": "столик", "maxGroup": 12, "phone": "+7 (812) 313-29-48", "note": "средиземноморская кухня на Большой Невке, терраса, по пятницам живая музыка", "photo": ""},
-  {"id": "kidosuv", "pick": true, "kw": ["кидо", "ки-до", "kido", "суши"], "name": "КИDO на Суворовском", "type": "food", "area": "Суворовский проспект, 51", "lat": 59.9425, "lon": 30.39, "minutes": 80, "check": 1500, "open": "12:00", "close": "23:00", "booking": true, "unit": "столик", "maxGroup": 12, "phone": "+7 (812) 600-23-51", "note": "японская кухня, суши", "photo": ""},
-  {"id": "kidozel", "pick": true, "kw": ["кидо", "ки-до", "kido", "суши"], "name": "КИDO на Большой Зелениной", "type": "food", "area": "Большая Зеленина, 31", "lat": 59.9628, "lon": 30.2905, "minutes": 80, "check": 1500, "open": "12:00", "close": "23:00", "booking": true, "unit": "столик", "maxGroup": 12, "phone": "+7 (812) 645-10-00", "note": "японская кухня, суши", "photo": ""},
+  {"id": "kidosuv", "pick": true, "kw": ["кидо", "ки-до", "kido"], "name": "КИDO на Суворовском", "type": "food", "area": "Суворовский проспект, 51", "lat": 59.9425, "lon": 30.39, "minutes": 80, "check": 1500, "open": "12:00", "close": "23:00", "booking": true, "unit": "столик", "maxGroup": 12, "phone": "+7 (812) 600-23-51", "note": "японская кухня, суши", "photo": ""},
+  {"id": "kidozel", "pick": true, "kw": ["кидо", "ки-до", "kido"], "name": "КИDO на Большой Зелениной", "type": "food", "area": "Большая Зеленина, 31", "lat": 59.9628, "lon": 30.2905, "minutes": 80, "check": 1500, "open": "12:00", "close": "23:00", "booking": true, "unit": "столик", "maxGroup": 12, "phone": "+7 (812) 645-10-00", "note": "японская кухня, суши", "photo": ""},
   {"id": "medici", "pick": true, "kw": ["медичи", "medici", "пицц"], "name": "Ресторан Medici", "type": "food", "area": "проспект Медиков, 10к1", "lat": 59.9725, "lon": 30.318, "minutes": 90, "check": 2000, "open": "12:00", "close": "23:00", "booking": true, "unit": "столик", "maxGroup": 12, "phone": "+7 (812) 964-31-00", "note": "неаполитанская пицца на огне и свежая паста", "photo": ""},
   {"id": "solids", "pick": true, "kw": ["solids", "солидс", "оранжев"], "name": "Solids Billiard & Bar", "type": "billiard", "area": "Гатчинская улица, 16", "lat": 59.9604, "lon": 30.2988, "minutes": 120, "check": 1800, "open": "16:00", "close": "02:00", "booking": false, "walkin": true, "vip": 10000, "unit": "стол", "maxGroup": 12, "phone": "+7 (981) 988-88-20", "note": "модный оранжевый бар с американским пулом и своим двором, столы по живой очереди", "photo": ""},
   {"id": "alibi", "pick": true, "kw": ["алиби", "alibi", "русский бильярд", "русскую пирамид", "снукер"], "name": "Бильярдный клуб «Алиби»", "type": "billiard", "area": "Пионерская улица, 21 (ТЦ «Пионер»)", "lat": 59.9592, "lon": 30.2907, "minutes": 120, "check": 1200, "open": "10:00", "close": "06:00", "booking": true, "unit": "стол", "maxGroup": 10, "phone": "+7 (931) 298-77-78", "note": "русский бильярд, американский пул и снукер, открыт до 6 утра", "photo": ""},
@@ -1834,7 +1836,7 @@ function localParse(text,quick){
   // формат музыки/места тянет за собой тип: джаз — это бар или концерт
   if(feat.has("jazz")||feat.has("live")){if(!like.has("show")&&!like.has("bar"))like.add("bar");if(/бар/.test(low)&&!/шоу|концерт|кабаре|мюзикл|представлен|филармон/.test(low))like.delete("show")}
   if(feat.has("karaoke")||feat.has("dance"))like.add("party");
-  if(feat.size)s.push("формат: "+[...feat].map(t=>FEAT_NAME[t]).join(", "));
+  if(feat.size){s.push("формат: "+[...feat].map(t=>FEAT_NAME[t]).join(", "));if(!like.has("show")&&s[0]&&s[0].startsWith("хочется: "))s[0]="хочется: "+[...like].map(nm).join(", ")}
   // порядок: «сначала погулять, потом бар» — соблюдаем
   let order=[];
   if(/сначала|потом|затем|после этого|после чего|в конце|а дальше|под конец|напоследок|для начала|начнем с|начать с/.test(low)){
@@ -2080,6 +2082,7 @@ function build(){
   const mv=f.move||"metro";
   const near=pr.compact?1.8:mv==="walk"?1.6:mv==="car"?4.5:mv==="bus"?3:2.6,span=pr.compact?2.4:mv==="walk"?2.6:mv==="car"?7:mv==="bus"?4.5:3.6;
   const strictExtra=likeCore.filter(t=>t!=="food").length>0&&!pr.namedOnly;
+  if((pr.order||[]).length>=2&&!pr.maxStops)maxStops=Math.min(maxStops,pr.order.length+(pr.like.includes("food")&&!pr.order.includes("food")?1:0));
   if(pr.namedOnly&&!pr.maxStops)maxStops=Math.max(maxStops,Math.min(3,Math.ceil(f.hours/1.6)));
   // для первого места смотрим, есть ли рядом то, что ещё хочется: иначе маршрут оборвётся на одной точке
   const extraOK=q=>openToday(q)&&q.who.includes(f.who)&&n<=q.maxGroup&&!pr.exclude.includes(q.id)&&!pr.avoid.includes(q.type)&&
@@ -2334,13 +2337,13 @@ function renderRoute(animate){
   const res=state.res,f=state.form,r=res.route;
   const h=f.start;const part=h<5?"Ночь":h<12?"Утро":h<17?"День":h<22?"Вечер":"Ночь";
   $("#rTitle").textContent=part+(f.who==="date"?" для двоих":f.who==="solo"?" для себя":" с компанией из "+f.n);
-  const tags=[dateShort(),whoLabel(f),hm(res.startMin)+"–"+hm(res.startMin+f.hours*60),hoursTxt(f.hours)];
+  const tags=[dateShort(),whoLabel(f),hoursTxt(f.hours)];
   $("#rTags").innerHTML=tags.map(t=>"<span>"+esc(t)+"</span>").join("");
   $("#rUnderstood").textContent=state.prefs.summary||"";
   {const nm=namedMiss(res).trim(),al=$("#rAlert");al.hidden=!nm;al.innerHTML=nm?"<b>Важно.</b> "+esc(nm):""}
   const finish=r.length?r[r.length-1].end:res.startMin;
   const km=r.reduce((s,x)=>s+x.leg.km,0),bookN=r.filter(x=>x.p.booking||x.p.tickets).length;
-  $("#stats").innerHTML=stat("Точек",r.length)+stat("Время",hm(res.startMin)+"–"+hm(finish))+stat("Пешком",kmTxt(km))+stat("Бронь",bookN?bookN+" "+plural(bookN,["место","места","мест"]):"не нужна");
+  $("#stats").innerHTML=stat(plural(r.length,["место","места","мест"]),r.length)+stat("",hm(res.startMin)+"–"+hm(finish))+(km>0.05?stat("пешком",kmTxt(km)):"")+stat(bookN?plural(bookN,["бронь","брони","броней"]):"брони не нужны",bookN||"");
   if(!r.length){
     $("#timeline").innerHTML='<li><div class="empty">Под такие условия ничего не нашлось. Попробуй увеличить бюджет или время, или поменяй пожелания.</div></li>';
     if(LMAP){try{LMAP.remove()}catch(_){}LMAP=null}$("#map").innerHTML="";$("#legend").innerHTML="";$("#rNote").innerHTML="";$("#feedback").hidden=true;return;
@@ -2383,7 +2386,18 @@ function hoursWords(p){
   let late="";if(p.late){const ks=Object.keys(p.late);late=", "+ks.map(k=>DN[+k]).join(" и ")+" до "+p.late[ks[0]]}
   return d+base+late;
 }
-function namedMiss(res){
+function namedMiss(res){return namedMiss0(res)+wantMiss(res)}
+function wantMiss(res){
+  const pr=state.prefs||{},r=res.route,miss=[];
+  (pr.order||[]).forEach(t=>{if(!r.some(x=>LT(x.p).includes(t)))miss.push(TYPES[t].toLowerCase())});
+  (pr.feat||[]).forEach(f=>{if(!r.some(x=>(x.p.feat||[]).includes(f)))miss.push(FEAT_NAME[f])});
+  if(!miss.length)return "";
+  const spent=r.reduce((a,x)=>a+(x.p.check||0)*state.form.n,0),bud=+state.form.budget||0;
+  const cand=PLACES.filter(p=>openToday(p)&&((pr.order||[]).some(t=>LT(p).includes(t)&&!r.some(x=>LT(x.p).includes(t)))||(pr.feat||[]).some(f=>(p.feat||[]).includes(f)&&!r.some(x=>(x.p.feat||[]).includes(f)))));
+  const cheapest=cand.length?Math.min(...cand.map(p=>p.check||0)):0;
+  return " Не получилось уложить: "+[...new Set(miss)].join(", ")+"."+(bud&&spent+cheapest*state.form.n>bud?" Не хватает бюджета: нужно примерно "+fmtNum(Math.ceil((spent+cheapest*state.form.n)/500)*500)+" ₽ на компанию.":" Скорее всего, не хватило времени или подходящее место закрыто в это время: попробуй начать раньше или выбрать другой день.");
+}
+function namedMiss0(res){
   const pr=state.prefs||{},ids=[...new Set([...(pr.include||[]),...(pr.boost||[])])].filter(id=>!res.route.some(x=>x.p.id===id));
   if(!ids.length)return "";
   const out=ids.slice(0,2).map(id=>{const p=PLACES.find(q=>q.id===id);if(!p)return "";
