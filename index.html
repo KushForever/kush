@@ -69,6 +69,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
 body::after{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 40%,var(--bg) 100%);z-index:0}
 button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
+/* значок «Powered by Netlify», который хостинг вставляет сам */
+#nl-badge-frame,iframe[title="Powered by Netlify"]{display:none!important;visibility:hidden!important;pointer-events:none!important}
 ::selection{background:var(--neon);color:var(--neon-ink)}
 input,textarea{caret-color:var(--neon)}
 html{scrollbar-color:#2B382B #050605}
