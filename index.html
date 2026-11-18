@@ -2098,8 +2098,15 @@ function startOf(f){return (f.start<5?f.start+24:f.start)*60}
 function build(){
   const a=buildOnce(1),f=state.form,full=f.hours*60;
   const used=r=>r.route.length?r.route[r.route.length-1].end-r.startMin:0;
-  if(a.route.length<4&&used(a)<full*0.6){const b=buildOnce(1.9);if(b.route.length>a.route.length||used(b)>used(a)+45)return b}
-  return a;
+  let res=a;
+  if(a.route.length<4&&used(a)<full*0.6){const b=buildOnce(1.9);if(b.route.length>a.route.length||used(b)>used(a)+45)res=b}
+  if(!res.route.length){
+    // под все пожелания ничего не нашлось: берём то, что открыто и вмещает компанию
+    const save=state.prefs;
+    state.prefs=Object.assign({},save,{like:[],order:[],feat:[],namedOnly:false,maxStops:0,include:[],boost:[],keep:[],replaceWith:[],cuisine:[]});
+    try{const c=buildOnce(1.9);if(c.route.length){c.loose=true;res=c}}finally{state.prefs=save}
+  }
+  return res;
 }
 function buildOnce(relax){
   const f=state.form,pr=state.prefs,n=f.n,B=budgetNum()||1e9;
@@ -2442,11 +2449,16 @@ function hoursWords(p){
 function namedMiss(res){return namedMiss0(res)+wantMiss(res)}
 function wantMiss(res){
   const pr=state.prefs||{},r=res.route,miss=[];
+  if(res.loose)return " Под все пожелания сразу ничего не нашлось: в это время и на "+state.form.n+" человек подходящие места закрыты или не вмещают компанию. Собрал то, что открыто. Попробуй начать раньше, взять больше времени или убрать часть пожеланий.";
+  if(!r.length)return " В это время ничего подходящего не открыто. Попробуй начать раньше или выбрать другой день.";
   (pr.order||[]).forEach(t=>{if(!r.some(x=>LT(x.p).includes(t)))miss.push(TYPES[t].toLowerCase())});
   (pr.feat||[]).forEach(f=>{if(!r.some(x=>(x.p.feat||[]).includes(f)))miss.push(FEAT_NAME[f])});
   const featOk=(pr.feat||[]).length&&r.some(x=>(x.p.feat||[]).some(f=>(pr.feat||[]).includes(f)));
   (pr.like||[]).forEach(t=>{if(t==="coffee"||(t==="show"&&(featOk||(pr.feat||[]).length))||(t==="food"&&r.some(x=>isEat(x.p))))return;if(!r.some(x=>LT(x.p).includes(t)))miss.push(TYPES[t].toLowerCase())});
   if(!miss.length)return "";
+  const fits=Math.max(1,Math.ceil(state.form.hours/1.3)),wantN=(pr.like||[]).filter(t=>t!=="coffee").length;
+  const spent0=r.reduce((a,x)=>a+(x.p.check||0)*state.form.n,0),bud0=+state.form.budget||0;
+  if(wantN>fits&&!(bud0&&spent0>bud0*0.8))return " Пожеланий много, а на "+hoursTxt(state.form.hours)+" помещается "+fits+" "+(fits===1?"место":fits<5?"места":"мест")+". Взял главное. Чтобы добавить остальное ("+[...new Set(miss)].slice(0,3).join(", ")+"), увеличь время или нажми «Другой вариант».";
   const spent=r.reduce((a,x)=>a+(x.p.check||0)*state.form.n,0),bud=+state.form.budget||0;
   const cand=PLACES.filter(p=>openToday(p)&&state.form.n<=p.maxGroup&&(([...(pr.order||[]),...(pr.like||[])]).some(t=>LT(p).includes(t)&&!r.some(x=>LT(x.p).includes(t)))||(pr.feat||[]).some(f=>(p.feat||[]).includes(f)&&!r.some(x=>(x.p.feat||[]).includes(f)))));
   const cheapest=cand.length?Math.min(...cand.map(p=>p.check||0)):0;
