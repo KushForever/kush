@@ -240,6 +240,7 @@ h1,h2,h3{text-wrap:balance}
 .mapcard{position:sticky;top:16px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:8px;overflow:hidden}
 .mapcard #map>svg{display:block;width:100%;height:auto}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 10px 6px;font-size:12px;color:var(--muted)}
+.legend:empty{display:none}
 .legend span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .legend i{width:8px;height:8px;border-radius:50%;background:var(--cat)}
 .m-lbl{font-family:var(--font-body);font-size:18px;font-weight:600;fill:var(--text);paint-order:stroke;stroke:var(--bg);stroke-width:5px;stroke-linejoin:round}
@@ -2502,7 +2503,7 @@ function renderRoute(animate){
   $("#rNote").innerHTML=dusk?'<p class="note">'+(COLD?"Сейчас в Петербурге темнеет рано и холодно, поэтому прогулки в маршруте короткие, около 40–50 минут. Возьми что-нибудь тёплое.":"Прогулки и виды будут уже в огнях.")+'</p>':"";
   const real=drawMap(r);
   const types=[...new Set(r.map(x=>x.p.type))];
-  $("#legend").innerHTML=types.map(t=>'<span style="--cat:var(--c-'+t+')"><i></i>'+TYPES[t]+'</span>').join("")+'<span><svg width="22" height="8" aria-hidden="true"><path d="M1 4h20" stroke="#B6FF2E" stroke-width="3" stroke-linecap="round"/></svg>пешком</span><span><svg width="22" height="8" aria-hidden="true"><path d="M1 4h20" stroke="#B6FF2E" stroke-width="3" stroke-linecap="round" stroke-dasharray="4 4"/></svg>метро или такси</span>'+(r.some(x=>x.p.far||Math.hypot(x.p.x,x.p.y)>7)?'<span>↗ за краем карты: далеко от центра</span>':'');
+  $("#legend").innerHTML=r.some(x=>x.p.far||Math.hypot(x.p.x,x.p.y)>7)?'<span>↗ часть мест далеко от центра, карта покажет всё целиком</span>':'';
   if(animate&&!reduced&&!real)animateMap();
   hydratePhotos();
 }
@@ -3432,8 +3433,8 @@ function drawMap(route){
   const pts=route.map(x=>[x.p.lat,x.p.lon]);
   for(let i=1;i<route.length;i++){
     const walk=route[i].leg.mode==="walk";
-    const ln=L.polyline([pts[i-1],pts[i]],{color:"#B6FF2E",weight:walk?5:4,opacity:.95,dashArray:walk?null:"9 9",lineCap:"round",className:"kush-route"}).addTo(m);
-    streetPath(route[i-1].p,route[i].p,route[i].leg.mode).then(g=>{if(g&&LMAP===m){ln.setLatLngs(g);ln.setStyle({dashArray:walk?null:"2 8"})}});
+    const ln=L.polyline([pts[i-1],pts[i]],{color:"#B6FF2E",weight:walk?5:4,opacity:walk?.95:.55,lineCap:"round",lineJoin:"round",className:"kush-route"}).addTo(m);
+    streetPath(route[i-1].p,route[i].p,route[i].leg.mode).then(g=>{if(g&&LMAP===m){ln.setLatLngs(g);try{m._kushFit()}catch(_){}}});
     ln
       .bindTooltip(legTxt(route[i].leg),{sticky:true,className:"kush-tip"});
   }
@@ -3444,6 +3445,7 @@ function drawMap(route){
   });
   m._kushFit=()=>{try{m.invalidateSize();if(pts.length===1)m.setView(pts[0],15);else m.fitBounds(L.latLngBounds(pts),{padding:[46,46],maxZoom:15.5})}catch(_){}};
   m._kushFit();setTimeout(m._kushFit,350);
+  try{let lw=0,lh=0;const ro=new ResizeObserver(es=>{if(LMAP!==m){ro.disconnect();return}const r0=es[0].contentRect;if(r0.width>0&&r0.height>0&&(Math.abs(r0.width-lw)>2||Math.abs(r0.height-lh)>2)){lw=r0.width;lh=r0.height;m._kushFit()}});ro.observe(document.getElementById("lmap"))}catch(_){}
   return true;
 }
 
