@@ -1721,7 +1721,7 @@ const KW={
   bar:["бар","коктейл","выпить","вино","винн","пиво","пива","настойк","джаз","посидеть","алкогол","виски"],
   party:["тусов","тусн","клуб","танц","движ","караоке","вечерин","рейв","оторв","до утра","спеть","петь","диджей","потанцевать"],
   cinema:["кино","фильм","кинотеатр","сеанс","премьер","автокино","кинопарк"],
-  active:["картинг","падел","теннис","каток","коньк","лыж","сноуборд","горнолыж","спорт","актив","адреналин","покатат","игора","охта парк","охтапарк","поиграть","аэротруб","полет","полёт","полетать","скалодром","скалолаз","боулдер","верёвоч","веревоч","экстрим","лазать","батут"],
+  active:["картинг","падел","теннис","каток","коньк","лыж","сноуборд","горнолыж","спорт","актив","адреналин","покатат","игора","охта парк","охтапарк","поиграть","аэротруб","полет","полёт","полетать","скалодром","скалолаз","боулдер","верёвоч","веревоч","экстрим","лазать","батут","подвигат","размят","физическ"],
   show:["шоу","кабаре","джаз","концерт","живая музык","живой музык","представлен","мюзикл"],
   relax:["бассейн","поплава","плават","спа","spa","релакс","расслаб","терм","сауна","сауну","саун","баня","бани","баню","бань","попарит","париться","парилк","хаммам","массаж","клиник","восстанов","перезагруз"],
   cigar:["сигар","покурить","курить","курим","курю","покурим"],
@@ -1748,7 +1748,19 @@ PLACES.forEach(p=>{const f=new Set([...(p.feat||[]),...(FEAT_MAN[p.id]||[])]);
   p.feat=[...f]});
 /* название заведения в тексте — человек хочет именно его */
 const NAME_STOP=new Set("ресторан бар бары клуб музей банный комплекс рюмочная винный джаз джаз-бар кафе галерея парк театр кинотеатр спикизи тапас тапас-бар лобби-бар отель гранд отеля сад остров улица набережная проспект филармония джазовой музыки государственный русский центр студия пространство велнес велнес-клуб акваклуб загородный массаж massage bar club restaurant пельменная бар-кабаре кабаре грузинский итальянский каток крыша вечер".split(" "));
-const nameKeys=p=>p.nameKeys||(p.nameKeys=normTxt(p.name.replace(/[«»"]/g," ")).split(" ").filter(w=>w.length>=5&&!NAME_STOP.has(w)).map(w=>w.length>=6?w.slice(0,-1):w));
+const rawKeys=p=>normTxt(p.name.replace(/[«»"]/g," ")).split(" ").filter(w=>w.length>=5&&!NAME_STOP.has(w)).map(w=>w.length>=6?w.slice(0,-1):w);
+let GENERIC=null;
+const genericKey=k=>{
+  if(!GENERIC){GENERIC=new Set();const by={};
+    PLACES.forEach(p=>{const brand=p.chain||rawKeys(p).join(" ");rawKeys(p).forEach(x=>{(by[x]=by[x]||new Set()).add(brand)})});
+    for(const x in by)if(by[x].size>=2)GENERIC.add(x);
+    const kws=[...Object.values(KW).flat(),...Object.values(FEAT_KW).flat()].map(w=>normTxt(w)).filter(w=>w.length>=4);
+    for(const x in by)if(kws.some(w=>w.startsWith(x)||x.startsWith(w)))GENERIC.add(x)}
+  return GENERIC.has(k)};
+const nameKeys=p=>p.nameKeys||(p.nameKeys=rawKeys(p).filter(k=>!genericKey(k)));
+const TRL={a:"а",b:"б",c:"к",d:"д",e:"е",f:"ф",g:"г",h:"х",i:"и",j:"дж",k:"к",l:"л",m:"м",n:"н",o:"о",p:"п",q:"к",r:"р",s:"с",t:"т",u:"у",v:"в",w:"в",x:"кс",y:"й",z:"з"};
+const SHORT_STOP=new Set("the and bar club hat cafe шум".split(" "));
+const shortKeys=p=>p.shortKeys||(p.shortKeys=(()=>{const w=normTxt(p.name.replace(/[«»"]/g," ")).split(" ").filter(x=>x.length>=3&&x.length<=4&&!NAME_STOP.has(x)&&!SHORT_STOP.has(x));const out=new Set(w);w.forEach(x=>{if(/^[a-z]+$/.test(x))out.add(x.split("").map(c=>TRL[c]||c).join(""))});return [...out]})());
 const hasFeat=(p,want)=>want.some(w=>(p.feat||[]).includes(w));
 const CU_KW={
   jp:["суши","ролл","сашими","японск","япони","рамен","удон","омакасе"],
@@ -1833,7 +1845,7 @@ function localParse(text,quick){
     const cuNeg=neg&&CU_TAGS.some(t=>CU_KW[t].some(k=>c.includes(k)));
     for(const t in KW){ if(KW[t].some(k=>c.includes(k))){ if(neg){ if(!(cuNeg&&t==="food")) avoid.add(t) } else like.add(t) } }
     if(!neg) PLACES.forEach(p=>{if((p.kw||[]).some(k=>c.includes(k)))boost.add(p.id);
-      const nc=normTxt(c),nk=nameKeys(p);if(nk.length&&nk.some(k=>nc.split(" ").some(w=>w.startsWith(k))))named.add(p.id)});
+      const nc=normTxt(c),nw=nc.split(" "),nk=nameKeys(p),sk=shortKeys(p);if((nk.length&&nk.some(k=>nw.some(w=>w.startsWith(k))))||sk.some(k=>nw.some(w=>w===k||(k.length>=3&&w.length===k.length+1&&w.startsWith(k)&&/[еуаоы]$/.test(w)))))named.add(p.id)});
     if(neg) PLACES.forEach(p=>{const core=p.name.toLowerCase().replace(/ё/g,"е").replace(/[«»"]/g,"").split(" ").filter(w=>w.length>3);if(core.some(w=>c.includes(w)))exclude.add(p.id)});
   }
   if(/спокойн|тих|без шума|уютн/.test(low))avoid.add("party");
@@ -2084,6 +2096,12 @@ function slot(p,t,cur,lim){
 }
 function startOf(f){return (f.start<5?f.start+24:f.start)*60}
 function build(){
+  const a=buildOnce(1),f=state.form,full=f.hours*60;
+  const used=r=>r.route.length?r.route[r.route.length-1].end-r.startMin:0;
+  if(a.route.length<4&&used(a)<full*0.6){const b=buildOnce(1.9);if(b.route.length>a.route.length||used(b)>used(a)+45)return b}
+  return a;
+}
+function buildOnce(relax){
   const f=state.form,pr=state.prefs,n=f.n,B=budgetNum()||1e9;
   const startMin=startOf(f),endMin=startMin+f.hours*60;
   const route=[];let t=startMin,cur=null,spent=0;const used=new Set();
@@ -2099,7 +2117,9 @@ function build(){
   let maxStops=pr.maxStops||(onlyEat?1:!likeCore.length?3:likeCore.every(t=>t==="food")?2:Math.min(4,likeCore.length+1));
   maxStops=Math.max(1,Math.min(maxStops,Math.ceil(f.hours/1.3)));
   const mv=f.move||"metro";
-  const near=pr.compact?1.8:mv==="walk"?1.6:mv==="car"?4.5:mv==="bus"?3:2.6,span=pr.compact?2.4:mv==="walk"?2.6:mv==="car"?7:mv==="bus"?4.5:3.6;
+  const near=(pr.compact?1.8:mv==="walk"?1.6:mv==="car"?4.5:mv==="bus"?3:2.6)*relax,span=(pr.compact?2.4:mv==="walk"?2.6:mv==="car"?7:mv==="bus"?4.5:3.6)*relax;
+  // сколько минимум стоит каждый желаемый тип: чтобы первое место не съело деньги на остальные
+  const minCost={};likeCore.forEach(t=>{const c=PLACES.filter(q=>LT(q).includes(t)&&openToday(q)&&q.who.includes(f.who)&&n<=q.maxGroup&&!pr.exclude.includes(q.id)).map(q=>(q.check||0)*n);if(c.length)minCost[t]=Math.min(...c)});
   const strictExtra=likeCore.filter(t=>t!=="food").length>0&&!pr.namedOnly;
   if((pr.order||[]).length>=2&&!pr.maxStops)maxStops=Math.min(maxStops,pr.order.length+(pr.like.includes("food")&&!pr.order.includes("food")?1:0));
   if(pr.namedOnly&&!pr.maxStops)maxStops=Math.max(maxStops,Math.min(3,Math.ceil(f.hours/1.6)));
@@ -2153,6 +2173,8 @@ function build(){
       if(end>endMin+10)continue;
       const cost=p.check*n;
       if(spent+cost>B)continue;
+      let reserve=0;
+      if(B<1e9&&!forced){const rest=likeCore.filter(t=>minCost[t]!==undefined&&!LT(p).includes(t)&&!route.some(r=>LT(r.p).includes(t))).map(t=>minCost[t]).sort((x,y)=>x-y).slice(0,Math.max(0,maxStops-route.length-1));reserve=rest.reduce((x,y)=>x+y,0)}
       if(anchors.some(a=>a!==p&&!used.has(a.id)&&end+travel(p,a).min>a.cH*60-a.minutes))continue;
       // формат: «бар с джазом» — бар без джаза не подходит
       if(featExists&&!featDone&&!forced&&!boosted){
@@ -2169,6 +2191,7 @@ function build(){
       if(featWant.length&&hasFeat(p,featWant)){if(featDone&&!forced&&!boosted&&LT(p).some(t=>["bar","show","party"].includes(t))&&!(pr.like.includes("party")&&p.type==="party"))continue;s+=12}
       if(featWant.length&&pr.like.includes("bar")&&!pr.like.includes("show")&&!LT(p).includes("bar")&&LT(p).includes("show"))s-=5;
       if(nextT&&LT(p).includes(nextT))s+=8;
+      else if(nextT&&!forced&&!route.length)s-=6;
       if(LT(p).some(t=>pr.like.includes(t)))s+=7;
       if(pr.namedOnly&&!route.some(r=>LT(r.p).some(t=>pr.like.includes(t)))&&LT(p).some(t=>pr.like.includes(t)))s+=8;else if(!pr.like.length&&["walk","view","food","bar"].includes(p.type))s+=2;
       if(forced)s+=25;
@@ -2208,6 +2231,7 @@ function build(){
       if(p.museum&&!pr.like.includes("culture"))s-=pr.like.some(t=>["party","bar"].includes(t))?7:3;
       if(rich&&!p.check&&!p.night)s-=1.5;
       if(left<130&&["bar","view","party"].includes(p.type))s+=1.5;
+      if(reserve&&spent+cost+reserve>B)s-=12;
       s+=rnd(state.seed,p.id)*2.4;
       if(s>bestS){bestS=s;best=p;bestInfo={leg,arrive,end,cost}}
     }
@@ -2420,14 +2444,16 @@ function wantMiss(res){
   const pr=state.prefs||{},r=res.route,miss=[];
   (pr.order||[]).forEach(t=>{if(!r.some(x=>LT(x.p).includes(t)))miss.push(TYPES[t].toLowerCase())});
   (pr.feat||[]).forEach(f=>{if(!r.some(x=>(x.p.feat||[]).includes(f)))miss.push(FEAT_NAME[f])});
+  const featOk=(pr.feat||[]).length&&r.some(x=>(x.p.feat||[]).some(f=>(pr.feat||[]).includes(f)));
+  (pr.like||[]).forEach(t=>{if(t==="coffee"||(t==="show"&&(featOk||(pr.feat||[]).length))||(t==="food"&&r.some(x=>isEat(x.p))))return;if(!r.some(x=>LT(x.p).includes(t)))miss.push(TYPES[t].toLowerCase())});
   if(!miss.length)return "";
   const spent=r.reduce((a,x)=>a+(x.p.check||0)*state.form.n,0),bud=+state.form.budget||0;
-  const cand=PLACES.filter(p=>openToday(p)&&((pr.order||[]).some(t=>LT(p).includes(t)&&!r.some(x=>LT(x.p).includes(t)))||(pr.feat||[]).some(f=>(p.feat||[]).includes(f)&&!r.some(x=>(x.p.feat||[]).includes(f)))));
+  const cand=PLACES.filter(p=>openToday(p)&&state.form.n<=p.maxGroup&&(([...(pr.order||[]),...(pr.like||[])]).some(t=>LT(p).includes(t)&&!r.some(x=>LT(x.p).includes(t)))||(pr.feat||[]).some(f=>(p.feat||[]).includes(f)&&!r.some(x=>(x.p.feat||[]).includes(f)))));
   const cheapest=cand.length?Math.min(...cand.map(p=>p.check||0)):0;
   return " Не получилось уложить: "+[...new Set(miss)].join(", ")+"."+(bud&&spent+cheapest*state.form.n>bud?" Не хватает бюджета: нужно примерно "+fmtNum(Math.ceil((spent+cheapest*state.form.n)/500)*500)+" ₽ на компанию.":" Скорее всего, не хватило времени или подходящее место закрыто в это время: попробуй начать раньше или выбрать другой день.");
 }
 function namedMiss0(res){
-  const pr=state.prefs||{},ids=[...new Set([...(pr.include||[]),...(pr.boost||[])])].filter(id=>!res.route.some(x=>x.p.id===id));
+  const pr=state.prefs||{},ids=[...new Set(pr.include||[])].filter(id=>{const q=PLACES.find(z=>z.id===id);return !res.route.some(x=>x.p.id===id||(q&&q.chain&&x.p.chain===q.chain))});
   if(!ids.length)return "";
   const out=ids.slice(0,2).map(id=>{const p=PLACES.find(q=>q.id===id);if(!p)return "";
     if(!openToday(p))return " "+p.name+" "+dateWord()+" не работает"+(p.days&&!p.days.includes(TODAY.getDay())?" ("+DFULL[TODAY.getDay()].replace(/у$/,"а")+" — выходной)":"")+". Часы: "+hoursWords(p)+". Пока собрал вечер без него, с похожими местами. Если хочешь именно туда, выбери другую дату на шаге со временем.";
@@ -2536,21 +2562,24 @@ function buddyType(text){
 }
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 function buddyLocal(res,kind){
-  const f=state.form,r=res.route,names=r.map(x=>x.p.name.replace(/^(Ресторан|Бар|Джаз-бар|Рюмочная|Музей|Банный комплекс)\s+/,""));
+  const f=state.form,r=res.route,n=r.length,q=t=>/[«"]/.test(t)?t:"«"+t+"»";
+  const names=r.map(x=>q(x.p.name.replace(/^(Ресторан|Бар|Джаз-бар|Рюмочная|Музей|Банный комплекс)\s+/,"")));
   const has=t=>r.some(x=>LT(x.p).includes(t)),book=r.filter(x=>x.p.booking&&!x.p.walkin).length;
-  if(kind==="edit")return pick(["Готово, переставил! Так даже лучше 😉","Есть! Обновил вечер, смотри 👀","Сделано. Новый вариант уже ждёт 👇","Принято, поменял! Как тебе теперь?"]);
-  const first=names[0]?(/[«"]/.test(names[0])?names[0]:"«"+names[0]+"»"):"";
-  let a=[];
-  if(f.who==="friends"&&f.n>=5)a.push("Ха-ха, компания из "+f.n+" человек — это уже движ! 🔥 Начинаете с "+first+", дальше только веселее.","Вас "+f.n+"? Отлично, будет громко 😄 "+first+" — шикарный старт.");
-  else if(f.who==="friends")a.push("Вот это план! 😎 "+first+" для начала, а дальше по нарастающей.","Хорошая компания и хороший маршрут — что ещё нужно? 🙌");
-  if(f.who==="date")a.push("Ооо, свидание! 💛 "+first+" — очень удачный выбор, атмосфера там что надо.","Романтика уровня «запомнится надолго» ✨ Начинаем с "+first+".");
-  if(f.who==="solo")a.push("Вечер для себя — лучшая идея 😌 "+first+" как раз под настроение.");
-  if(has("bar")&&f.who==="friends")a.push("Пиво, разговоры, потом продолжение — классика жанра 🍻");
-  if(has("party"))a.push("Ну всё, сегодня танцуем до утра 💃🕺");
-  if(has("relax"))a.push("Баня и отдых — вот это правильный подход 🧖");
-  if((state.prefs.feat||[]).includes("jazz"))a.push("Джаз вечером — это стильно 🎷 Хороший вкус!");
-  let t=pick(a.length?a:["Отличный план! 🙌 Смотри, что получилось."]);
-  if(book)t+=" "+(book===1?"Одно место лучше забронировать":"Пару мест лучше забронировать")+" — нажми «Забронировать», остальное сделаем мы.";
+  if(kind==="edit")return pick(["Готово, поменял 👌","Сделано, смотри новый вариант 👇","Обновил маршрут. Как тебе так?"]);
+  if(!n)return "";
+  let t;
+  if(n===1&&!namedMiss(res).trim())t=(has("relax")?"Весь вечер в "+names[0]+" — отличный способ отдохнуть 🧖":"Весь вечер в "+names[0]+". Хороший выбор.");
+  else if(n===1)t=pick(["Пока получилось одно место — "+names[0]+". Ниже написал, чего не хватило, чтобы добавить остальное.","Собрал "+names[0]+", но на остальное не хватило. Подробности ниже 👇"]);
+  else{
+    const chain=n===2?names[0]+" и "+names[1]:names[0]+", потом "+names.slice(1,-1).join(", ")+(n>3?",":"")+" и в конце "+names[n-1];
+    const who=f.who==="date"?pick(["Отличный план для свидания 💛","Хороший вечер на двоих получается ✨"]):f.who==="solo"?"Хороший вечер для себя 😌":f.n>=5?pick(["На "+f.n+" человек собрал так","Для компании из "+f.n+" подойдёт"]):pick(["Неплохой план 😎","Хорошая получилась программа 🙌"]);
+    let extra="";
+    if((state.prefs.feat||[]).includes("jazz")&&r.some(x=>(x.p.feat||[]).includes("jazz")))extra=" Джаз тоже нашёл 🎷";
+    else if(has("relax"))extra=" Баня в программе 🧖";
+    else if(has("party"))extra=" Финал — танцы 💃";
+    t=who+": "+chain+"."+extra;
+  }
+  if(book)t+=" "+(book===1?"Одно место лучше забронировать":"Пару мест лучше забронировать")+" — жми «Забронировать».";
   return t;
 }
 async function showBuddy(res,kind){
@@ -2558,7 +2587,7 @@ async function showBuddy(res,kind){
   if(kind==="edit")return;
   const f=state.form,r=res.route;
   const facts={company:f.who==="date"?"свидание вдвоём":f.who==="solo"?"один":"компания из "+f.n+" человек",date:dateWord(),wish:f.wish||"",places:r.map(x=>x.p.name+" ("+TYPES[x.p.type].toLowerCase()+")"),needBooking:r.filter(x=>x.p.booking&&!x.p.walkin).length};
-  const ai=await aiJSON(`Ты — весёлый дружелюбный помощник сервиса KUSH, который собирает вечер в Петербурге. Человек только что получил маршрут. Напиши короткую живую реакцию на русском, как друг в чате: 1–2 предложения, до 200 символов, на «ты», с юмором и одним-двумя эмодзи. Похвали задумку, упомяни что-то конкретное из маршрута или компании. Если needBooking>0, в конце скажи, что брони можно оставить нам (нажать «Забронировать»). Не обещай, что места точно будут. Без пошлости, мата и алкогольных призывов.
+  const ai=await aiJSON(`Ты — весёлый дружелюбный помощник сервиса KUSH, который собирает вечер в Петербурге. Человек только что получил маршрут. Напиши короткую живую реакцию на русском, как друг в чате: 1–2 предложения, до 200 символов, на «ты», легко и по-доброму, максимум одно эмодзи. Упомяни что-то конкретное из маршрута (место или идею) и почему это хорошо сочетается. Если в маршруте одно место, честно скажи, что пока получилось одно, без восторгов. Не используй штампы и сленг вроде «движ», «дальше только веселее», «будет громко», «огонь», «ха-ха», «классика жанра». Если needBooking>0, в конце скажи, что брони можно оставить нам (нажать «Забронировать»). Не обещай, что места точно будут. Без пошлости, мата и алкогольных призывов.
 Данные: ${JSON.stringify(facts)}
 Ответь строго JSON: {"text":"..."}`);
   if(n!==BUDDY_N||!ai||typeof ai.text!=="string")return;
