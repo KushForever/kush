@@ -266,7 +266,8 @@ h1,h2,h3{text-wrap:balance}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:20px}
 .flowers[hidden]{display:none}
 .rflow{display:flex;align-items:center;gap:12px;margin:14px 0;padding:14px 16px;border:1px solid color-mix(in srgb,var(--neon) 40%,var(--line));border-radius:16px;background:var(--panel);color:inherit;text-decoration:none;font-size:15px;line-height:1.4}
-.rflow[hidden]{display:none}.rflow>span:first-child{font-size:24px}.rflow i{margin-left:auto;font-style:normal;color:var(--neon);font-size:20px}.rflow:hover{border-color:var(--neon)}
+.rflow[hidden]{display:none}
+.overt{list-style:none;margin:6px 0;padding:12px 14px;border:1px solid #F5A524;border-radius:14px;background:color-mix(in srgb,#F5A524 10%,transparent);font-size:14px;line-height:1.45}.overt b{color:#F5A524}.rflow>span:first-child{font-size:24px}.rflow i{margin-left:auto;font-style:normal;color:var(--neon);font-size:20px}.rflow:hover{border-color:var(--neon)}
 .flowers{margin-top:14px;display:flex;flex-direction:column;gap:8px;border-color:color-mix(in srgb,var(--neon) 35%,var(--line))}
 .flowers .fl-ic{font-size:26px;line-height:1}.flowers b{font-size:17px}.flowers p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}.flowers .btn{margin-top:4px;text-align:center;justify-content:center}
 .field{display:flex;flex-direction:column;gap:6px}
@@ -1296,7 +1297,7 @@ body[data-screen="s-reg"] .foot-note .link,body[data-screen="s-home"] .foot-note
 <body>
 <div class="wrap">
   <header class="top">
-    <button class="logo" id="logo" aria-label="KUSH, на главную"><span class="mcube" aria-hidden="true"><span class="cube"><i class="f1">K</i><i class="f2">K</i><i class="f3">K</i><i class="f4">K</i><i class="f5"></i><i class="f6"></i></span></span>KUSH</button>
+    <button class="logo" id="logo" aria-label="KUSH, на главную">KUSH</button>
     <button class="tokchip" id="tokChip" hidden aria-label="Токены"></button>
     <button class="userchip" id="userChip" hidden></button>
   </header>
@@ -2151,7 +2152,30 @@ function build(){
     state.prefs=Object.assign({},save,{like:[],order:[],feat:[],namedOnly:false,maxStops:0,include:[],boost:[],keep:[],replaceWith:[],cuisine:[]});
     try{const c=buildOnce(1.9);if(c.route.length){c.loose=true;res=c}}finally{state.prefs=save}
   }
+  if(!res.loose)extendOver(res);
   return res;
+}
+// человек хочет больше, чем помещается по времени: всё равно добавляем желаемое после конца, с пометкой
+function extendOver(res){
+  const f=state.form,pr=state.prefs,r=res.route,B=budgetNum()||1e9,n=f.n;if(!r.length)return;
+  const has=t=>r.some(x=>LT(x.p).includes(t));
+  let want=[...new Set([...(pr.order||[]),...(pr.like||[])])].filter(t=>TYPES[t]&&!has(t)&&!(t==="coffee"&&r.some(x=>isEat(x.p))));
+  if(want.includes("food")&&r.some(x=>isEat(x.p)))want=want.filter(t=>t!=="food");
+  let spent=r.reduce((a,x)=>a+(x.p.check||0)*n,0);
+  for(const t of want.slice(0,2)){
+    const last=r[r.length-1].p;let best=null,bs=-1e9,bi=null;
+    for(const p of PLACES){
+      if(r.some(x=>x.p.id===p.id)||!LT(p).includes(t)||!openToday(p)||n>p.maxGroup||!p.who.includes(f.who)&&!(pr.boost||[]).includes(p.id))continue;
+      if((pr.exclude||[]).includes(p.id)||(pr.avoid||[]).includes(p.type)||(f.who==="date"&&p.dateNo&&!(pr.boost||[]).includes(p.id)))continue;
+      if(!p.far&&!last.far&&dist(p,last)>5)continue;
+      const sl=slot(p,r[r.length-1].end,last,45);if(!sl)continue;
+      if(sl.end>res.endMin+200)continue;
+      const cost=(p.check||0)*n;if(spent+cost>B)continue;
+      let sc=-sl.leg.min/4-sl.wait/10+(p.pick?2:0)+((pr.boost||[]).includes(p.id)?8:0)+(f.who==="date"&&p.romantic?3:0)+rnd(state.seed,p.id)*2;
+      if(sc>bs){bs=sc;best=p;bi=sl}
+    }
+    if(best){r.push(Object.assign({p:best,over:true},bi,{cost:(best.check||0)*n}));spent+=(best.check||0)*n}
+  }
 }
 function buildOnce(relax){
   const f=state.form,pr=state.prefs,n=f.n,B=budgetNum()||1e9;
@@ -2450,7 +2474,7 @@ function renderRoute(animate){
   $("#rTitle").textContent=part+(f.who==="date"?" для двоих":f.who==="solo"?" для себя":" с компанией из "+f.n);
   const tags=[dateShort(),whoLabel(f),hoursTxt(f.hours)];
   $("#rTags").innerHTML=tags.map(t=>"<span>"+esc(t)+"</span>").join("");
-  $("#rUnderstood").textContent=state.prefs.summary||"";
+  $("#rUnderstood").textContent="";
   {const nm=namedMiss(res).trim(),al=$("#rAlert");al.hidden=!nm;al.innerHTML=nm?"<b>Важно.</b> "+esc(nm):""}
   {const fl=$("#rFlowers"),r0=res.route[0];fl.hidden=!(state.form.who==="date"&&r0);if(r0)$("#rFlowTxt").textContent="Florcat привезёт букет к "+hm(r0.arrive)+" к месту встречи — «"+r0.p.name.replace(/^(Ресторан|Бар|Кафе|Джаз-бар|Музей)\s+/,"").replace(/[«»]/g,"")+"». Выбрать букет"}
   const finish=r.length?r[r.length-1].end:res.startMin;
@@ -2468,6 +2492,7 @@ function renderRoute(animate){
     let badge=x.p.booking?'<span class="badge need">Нужна бронь</span>':x.p.tickets?'<span class="badge need">Билеты онлайн</span>':'<span class="badge">Можно без брони</span>';
     if(c&&["ok","shift","selfok","sent"].includes(c.status))badge='<span class="badge need">Забронировано</span>';
     if(c&&c.status==="prepay")badge='<span class="badge">Ждёт депозита</span>';
+    if(x.over)out+='<li class="overt" style="--i:'+(k++)+'"><b>Не помещается по времени.</b> Ты хотел «'+TYPES[x.p.type].toLowerCase()+'», поэтому оставили. Вечер закончится около '+hm(x.end)+' вместо '+hm(res.endMin)+'.</li>';
     out+='<li style="--i:'+(k++)+';--cat:var(--c-'+x.p.type+')"><article class="stop" data-open="'+i+'" tabindex="0" role="button" aria-label="Подробнее: '+esc(x.p.name)+'"><div class="cover" data-pid="'+esc(x.p.id)+'">'+cover(x.p,i)+'<span class="n">'+(i+1)+'</span><span class="time">'+hm(x.arrive)+'–'+hm(x.end)+'</span></div>'+
       '<div class="body"><h3>'+esc(x.p.name)+'</h3><p class="meta"><span class="cat">'+TYPES[x.p.type]+'</span>, '+durTxt(x.end-x.arrive)+(x.p.check>0?', чек ≈ '+fmtNum(x.p.check)+' ₽':'')+'</p><p class="addr">'+esc(x.p.area)+'</p>'+(x.p.note?'<p class="pnote">'+esc(x.p.note)+'</p>':'')+(dishesOf(x.p)?'<p class="pdish"><b>Что взять:</b> '+esc(dishesOf(x.p)[0])+'</p>':'')+branchHTML(x.p,i)+
       '<div class="foot">'+badge+'<button class="link" data-swap="'+i+'">Заменить</button></div></div></article></li>';
@@ -2510,6 +2535,7 @@ function wantMiss(res){
   if(!miss.length)return "";
   const fits=Math.max(1,Math.ceil(state.form.hours/1.3)),wantN=(pr.like||[]).filter(t=>t!=="coffee").length;
   const spent0=r.reduce((a,x)=>a+(x.p.check||0)*state.form.n,0),bud0=+state.form.budget||0;
+  if(r.some(x=>x.over))return "";
   if(wantN>fits&&!(bud0&&spent0>bud0*0.8))return " Пожеланий много, а на "+hoursTxt(state.form.hours)+" помещается "+fits+" "+(fits===1?"место":fits<5?"места":"мест")+". Взял главное. Чтобы добавить остальное ("+[...new Set(miss)].slice(0,3).join(", ")+"), увеличь время или нажми «Другой вариант».";
   // тип в этот день закрывается раньше, чем до него доходит очередь
   const endR=r.length?r[r.length-1].end:startOf(state.form),late=[];
