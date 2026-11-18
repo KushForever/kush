@@ -1364,7 +1364,7 @@ body[data-screen="s-reg"] .foot-note .link,body[data-screen="s-home"] .foot-note
         <h2 id="rTitle">Вечер для двоих</h2>
         <div class="tags" id="rTags"></div>
         <div class="buddy" id="rBuddy" hidden><span class="bav" aria-hidden="true">K</span><p id="rBuddyText" aria-live="polite"></p></div>
-        <p class="understood" id="rUnderstood"></p>
+        <p class="understood" id="rUnderstood" hidden></p>
       </div>
       <div class="actions">
         <button class="btn" id="btnEdit">Изменить ответы</button>
@@ -2465,7 +2465,6 @@ async function startBuild(){
   renderRoute(true);
   showBuddy(state.res,"new");
   $("#toast").textContent="";
-  {const nm=namedMiss(state.res);if(nm)flash((state.prefs.summary||"")+nm)}
   $("#fbForm").hidden=true;
   go("s-route");
 }
@@ -2562,7 +2561,7 @@ function namedMiss0(res){
   });
   return out.join("");
 }
-function flash(msg){const el=$("#rUnderstood");el.textContent=msg;el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");$("#toast").textContent=msg}
+function flash(msg){$("#toast").textContent=msg}
 function applyBranch(i,id){
   const p=PLACES.find(x=>x.id===id);if(!p)return;
   const seq=state.res.route.map(x=>x.p);seq[i]=p;const tm=retime(seq);
