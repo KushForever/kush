@@ -264,6 +264,9 @@ h1,h2,h3{text-wrap:balance}
 .b-grid{display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:28px;align-items:start;padding-bottom:60px}
 .side{display:flex;flex-direction:column;gap:14px;position:sticky;top:16px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:20px}
+.flowers[hidden]{display:none}
+.flowers{margin-top:14px;display:flex;flex-direction:column;gap:8px;border-color:color-mix(in srgb,var(--neon) 35%,var(--line))}
+.flowers .fl-ic{font-size:26px;line-height:1}.flowers b{font-size:17px}.flowers p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}.flowers .btn{margin-top:4px;text-align:center;justify-content:center}
 .field{display:flex;flex-direction:column;gap:6px}
 .field label{font-size:13px;color:var(--muted)}
 .field input,.field textarea{background:var(--bg);border:1px solid var(--line-2);border-radius:12px;padding:11px 12px;outline:none;resize:vertical}
@@ -1417,6 +1420,12 @@ body[data-screen="s-reg"] .foot-note .link,body[data-screen="s-home"] .foot-note
             <label class="toggle"><input type="checkbox" id="fast"> Ускорить звонки</label>
             <button class="btn neon" id="btnRun">Запустить бота</button>
           </div>
+        </div>
+        <div class="card flowers" id="flowerBox" hidden>
+          <span class="fl-ic" aria-hidden="true">💐</span>
+          <b>А цветы?</b>
+          <p id="flowerTxt">Букет к началу свидания — и вечер начнётся с улыбки. Florcat привезёт его прямо к месту встречи, к нужному времени.</p>
+          <a class="btn" href="https://florcat.ru/?utm_source=kush&utm_medium=date" target="_blank" rel="noopener">Выбрать букет во Florcat</a>
         </div>
       </aside>
       <div>
@@ -2797,6 +2806,8 @@ function animateMap(){
 const PHONE_ICON='<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z"/></svg>';
 const unitOf=c=>state.vip[c.r.p.id]?"VIP-зал":c.r.p.unit;
 function prepareBooking(){
+  const fb=$("#flowerBox");if(fb){fb.hidden=state.form.who!=="date";const first=state.res&&state.res.route[0];
+    if(first&&!fb.hidden)$("#flowerTxt").textContent="Букет к началу свидания — и вечер начнётся с улыбки. Florcat привезёт букет к "+hm(first.arrive)+" к месту встречи — «"+first.p.name.replace(/^(Ресторан|Бар|Кафе|Джаз-бар)\s+/,"").replace(/[«»]/g,"")+"». Или заберёшь сам по дороге."}
   if(state.calls.length&&state.calls.every(c=>state.res.route.includes(c.r))){renderCalls();return}
   let plain=0;
   let left=TOK.get();

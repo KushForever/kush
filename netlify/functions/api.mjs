@@ -109,6 +109,7 @@ async function onBooking(body) {
   if (!first.ok) return json({ ok: false, error: first.description || "Telegram не ответил" }, 502);
 
   const gid = tgUser ? String(tgUser.id) : "0";
+  const dt = f.who === "date" ? ":d" : "";
   for (const it of items) {
     const phone = cut(it.phone, 24);
     const body2 =
@@ -124,8 +125,8 @@ async function onBooking(body) {
       link_preview_options: { is_disabled: true },
       reply_markup: {
         inline_keyboard: [[
-          { text: "Забронировал", callback_data: `bk:ok:${gid}` },
-          { text: "Мест нет", callback_data: `bk:no:${gid}` },
+          { text: "Забронировал", callback_data: `bk:ok:${gid}${dt}` },
+          { text: "Мест нет", callback_data: `bk:no:${gid}${dt}` },
         ]],
       },
     });
@@ -259,7 +260,8 @@ async function onWebhook(req, body) {
   const cq = body.callback_query;
 
   if (cq) {
-    const [kind, act, gid] = String(cq.data || "").split(":");
+    const [kind, act, gid, flag] = String(cq.data || "").split(":");
+    const isDate = flag === "d";
     const chat = cq.message ? cq.message.chat.id : cq.from.id;
     const isAdmin = String(cq.from && cq.from.id) === String(ADMIN);
 
@@ -276,9 +278,12 @@ async function onWebhook(req, body) {
           chat_id: gid,
           parse_mode: "HTML",
           text: done
-            ? `✅ <b>Бронь подтверждена</b>\n\n${place}\n\nЖдут тебя. Хорошего вечера!`
+            ? `✅ <b>Бронь подтверждена</b>\n\n${place}\n\nЖдут тебя. Хорошего вечера!` +
+              (isDate ? `\n\n💐 А цветы? Букет к началу свидания — и вечер начнётся с улыбки. Florcat привезёт его прямо к месту встречи.` : "")
             : `😔 <b>Не получилось</b>\n\n${place}\nМест нет. Открой KUSH и выбери замену, это полминуты.`,
-          reply_markup: done ? undefined : { inline_keyboard: [[{ text: "Открыть KUSH", web_app: { url: base } }]] },
+          reply_markup: done
+            ? (isDate ? { inline_keyboard: [[{ text: "💐 Выбрать букет во Florcat", url: "https://florcat.ru/?utm_source=kush&utm_medium=bot" }]] } : undefined)
+            : { inline_keyboard: [[{ text: "Открыть KUSH", web_app: { url: base } }]] },
         });
       }
       return json({ ok: true });
