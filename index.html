@@ -2167,6 +2167,7 @@ function extendOver(res){
     const last=r[r.length-1].p;let best=null,bs=-1e9,bi=null;
     for(const p of PLACES){
       if(r.some(x=>x.p.id===p.id)||!LT(p).includes(t)||!openToday(p)||n>p.maxGroup||!p.who.includes(f.who)&&!(pr.boost||[]).includes(p.id))continue;
+      if(p.id==="kinoparking"&&f.move!=="car")continue;
       if((pr.exclude||[]).includes(p.id)||(pr.avoid||[]).includes(p.type)||(f.who==="date"&&p.dateNo&&!(pr.boost||[]).includes(p.id)))continue;
       if(!p.far&&!last.far&&dist(p,last)>5)continue;
       const sl=slot(p,r[r.length-1].end,last,45);if(!sl)continue;
@@ -2246,6 +2247,7 @@ function buildOnce(relax){
       if(ASK.includes(p.type)&&route.some(r=>r.p.type===p.type)&&!forced)continue;
       if(!p.who.includes(f.who)&&!forced&&!boosted)continue;
       if(f.who==="date"&&p.dateNo&&!forced&&!boosted)continue;
+      if(p.id==="kinoparking"&&f.move!=="car"&&!forced)continue;
       if(n>p.maxGroup)continue;
       const tc=clockMin(t),morning=tc>=240&&tc<540&&["food","coffee"].includes(p.type);
       const sl=slot(p,t,cur,p.night&&(boosted||forced)?200:morning?260:boosted||forced?65:40);if(!sl)continue;
