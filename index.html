@@ -265,6 +265,8 @@ h1,h2,h3{text-wrap:balance}
 .side{display:flex;flex-direction:column;gap:14px;position:sticky;top:16px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:20px}
 .flowers[hidden]{display:none}
+.rflow{display:flex;align-items:center;gap:12px;margin:14px 0;padding:14px 16px;border:1px solid color-mix(in srgb,var(--neon) 40%,var(--line));border-radius:16px;background:var(--panel);color:inherit;text-decoration:none;font-size:15px;line-height:1.4}
+.rflow[hidden]{display:none}.rflow>span:first-child{font-size:24px}.rflow i{margin-left:auto;font-style:normal;color:var(--neon);font-size:20px}.rflow:hover{border-color:var(--neon)}
 .flowers{margin-top:14px;display:flex;flex-direction:column;gap:8px;border-color:color-mix(in srgb,var(--neon) 35%,var(--line))}
 .flowers .fl-ic{font-size:26px;line-height:1}.flowers b{font-size:17px}.flowers p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}.flowers .btn{margin-top:4px;text-align:center;justify-content:center}
 .field{display:flex;flex-direction:column;gap:6px}
@@ -1368,6 +1370,7 @@ body[data-screen="s-reg"] .foot-note .link,body[data-screen="s-home"] .foot-note
       </div>
     </div>
     <div class="alert" id="rAlert" role="status" hidden></div>
+    <a class="rflow" id="rFlowers" hidden href="https://florcat.ru/?utm_source=kush&utm_medium=route" target="_blank" rel="noopener"><span aria-hidden="true">💐</span><span><b>Свидание — значит, цветы.</b> <span id="rFlowTxt">Florcat привезёт букет к месту встречи.</span></span><i aria-hidden="true">→</i></a>
     <div class="stats" id="stats"></div>
     <div class="r-grid">
       <div>
@@ -1680,10 +1683,13 @@ function openToday(p){
   return true;
 }
 function timesFor(p){let o=toH(p.open),c=toH(p.late&&p.late[TODAY.getDay()]||p.close);if(p.open===p.close){o=0;c=48}else{if(c<=o)c+=24;if(o<6){o+=24;c+=24}}return [o,c]}
+// кому подходит место на свидание: не для свиданий (шумно, «пацанский» формат) и особенно красивые
+const DATE_NO=new Set("rybalka karlfriedrich pifpaf zvonok intelligent sinichka krasivaya mamatata leps alibi gorilla energy igora okhta myhistory chabrets".split(" "));
+const DATE_TOP=new Set("mansarda schastye mio terrassa marivanna percorso jidai flori lorenzo siesta joli rimski aiki lahta isaac strelka bridges nhollandia letniy elagin tauride botanic europelobby poltory kabinet apotheke hidden darmagi konservator arhitektor serge vitya jfc butman jazzphil thehat jazzberry yusupov hermitage silentcinema artstudio8 moparfum jaimelab rewax alssoy insix xclinic voda greenflow katokflag maisonrouge freud sevcable pot1nevsky kolokolrub".split(" "));
 const PLACES=KUSH_PLACES.map(p=>{
   let o=toH(p.open),c=toH(p.late&&p.late[TODAY.getDay()]||p.close);
   if(p.open===p.close){o=0;c=48}else{if(c<=o)c+=24;if(o<6){o+=24;c+=24}}
-  return Object.assign({},p,{x:(p.lon-LON0)*KX,y:(p.lat-LAT0)*KY,oH:o,cH:c,who:p.who||ALL,maxGroup:p.maxGroup||12,unit:p.unit||"столик",minutes:p.minutes||60,check:p.check||0});
+  return Object.assign({},p,{x:(p.lon-LON0)*KX,y:(p.lat-LAT0)*KY,oH:o,cH:c,who:(p.who||ALL).filter(w=>w!=="date"||!DATE_NO.has(p.id)),romantic:DATE_TOP.has(p.id),maxGroup:p.maxGroup||12,unit:p.unit||"столик",minutes:p.minutes||60,check:p.check||0});
 });
 
 const state={
@@ -2211,6 +2217,7 @@ function buildOnce(relax){
       if(LT(p).some(t=>pr.like.includes(t)))s+=7;
       if(pr.namedOnly&&!route.some(r=>LT(r.p).some(t=>pr.like.includes(t)))&&LT(p).some(t=>pr.like.includes(t)))s+=8;else if(!pr.like.length&&["walk","view","food","bar"].includes(p.type))s+=2;
       if(forced)s+=25;
+      if(f.who==="date"&&!forced)s+=p.romantic?4.5:-1.5;
       if(boosted)s+=9;
       if(ASK.includes(p.type)&&LT(p).some(t=>pr.like.includes(t)))s+=4;
       if(p.pick)s+=2.5;
@@ -2410,6 +2417,7 @@ function renderRoute(animate){
   $("#rTags").innerHTML=tags.map(t=>"<span>"+esc(t)+"</span>").join("");
   $("#rUnderstood").textContent=state.prefs.summary||"";
   {const nm=namedMiss(res).trim(),al=$("#rAlert");al.hidden=!nm;al.innerHTML=nm?"<b>Важно.</b> "+esc(nm):""}
+  {const fl=$("#rFlowers"),r0=res.route[0];fl.hidden=!(state.form.who==="date"&&r0);if(r0)$("#rFlowTxt").textContent="Florcat привезёт букет к "+hm(r0.arrive)+" к месту встречи — «"+r0.p.name.replace(/^(Ресторан|Бар|Кафе|Джаз-бар|Музей)\s+/,"").replace(/[«»]/g,"")+"». Выбрать букет"}
   const finish=r.length?r[r.length-1].end:res.startMin;
   const km=r.reduce((s,x)=>s+x.leg.km,0),bookN=r.filter(x=>x.p.booking||x.p.tickets).length;
   $("#stats").innerHTML=stat(plural(r.length,["место","места","мест"]),r.length)+stat("",hm(res.startMin)+"–"+hm(finish))+(km>0.05?stat("пешком",kmTxt(km)):"")+stat(bookN?plural(bookN,["бронь","брони","броней"]):"брони не нужны",bookN||"");
@@ -2468,6 +2476,11 @@ function wantMiss(res){
   const fits=Math.max(1,Math.ceil(state.form.hours/1.3)),wantN=(pr.like||[]).filter(t=>t!=="coffee").length;
   const spent0=r.reduce((a,x)=>a+(x.p.check||0)*state.form.n,0),bud0=+state.form.budget||0;
   if(wantN>fits&&!(bud0&&spent0>bud0*0.8))return " Пожеланий много, а на "+hoursTxt(state.form.hours)+" помещается "+fits+" "+(fits===1?"место":fits<5?"места":"мест")+". Взял главное. Чтобы добавить остальное ("+[...new Set(miss)].slice(0,3).join(", ")+"), увеличь время или нажми «Другой вариант».";
+  // тип в этот день закрывается раньше, чем до него доходит очередь
+  const endR=r.length?r[r.length-1].end:startOf(state.form),late=[];
+  [...(pr.order||[]),...(pr.like||[])].forEach(t=>{if(r.some(x=>LT(x.p).includes(t))||!TYPES[t])return;const ps=PLACES.filter(p=>LT(p).includes(t)&&openToday(p)&&state.form.n<=p.maxGroup);if(!ps.length)return;
+    const last=Math.max(...ps.map(p=>p.cH*60-(p.minutes||60)));if(last<endR&&!late.some(l=>l.t===t))late.push({t,last})});
+  if(late.length)return " Не получилось уложить: "+late.map(l=>TYPES[l.t].toLowerCase()+" (последний сеанс начинается около "+hm(l.last)+")").join(", ")+". Начни раньше — тогда успеете.";
   const spent=r.reduce((a,x)=>a+(x.p.check||0)*state.form.n,0),bud=+state.form.budget||0;
   const cand=PLACES.filter(p=>openToday(p)&&state.form.n<=p.maxGroup&&(([...(pr.order||[]),...(pr.like||[])]).some(t=>LT(p).includes(t)&&!r.some(x=>LT(x.p).includes(t)))||(pr.feat||[]).some(f=>(p.feat||[]).includes(f)&&!r.some(x=>(x.p.feat||[]).includes(f)))));
   const cheapest=cand.length?Math.min(...cand.map(p=>p.check||0)):0;
