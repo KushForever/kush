@@ -50,6 +50,7 @@
   --c-show:#F2EAD3;
   --c-relax:#9BEAFF;
   --c-cigar:#D4A23A;
+  --c-hookah:#C084FC;
   --c-workshop:#FF8A65;
   --c-fun:#FFC2EE;
   --c-billiard:#C9A0FF;
@@ -1589,7 +1590,7 @@ const KUSH_PLACES=[
   {"id": "golitsyn", "name": "Голицын Лофт", "type": "walk", "area": "Фонтанка", "lat": 59.93954, "lon": 30.34188, "minutes": 35, "check": 0, "open": "10:00", "close": "23:00", "booking": false, "note": "дворики, кафе, шоурумы", "photo": ""},
   {"id": "bridges", "night": true, "kw": ["развод","мост"], "name": "Развод Дворцового моста", "type": "view", "area": "Дворцовая набережная", "lat": 59.94120, "lon": 30.30880, "minutes": 35, "check": 0, "open": "00:50", "close": "01:45", "season": ["04-10", "11-30"], "booking": false, "note": "мост поднимают в 01:10, лучше смотреть с набережной или Стрелки", "photo": ""},
   {"id": "terrassa", "pick": true, "kw": ["террас"], "name": "Ресторан Terrassa", "type": "food", "area": "Казанская улица", "lat": 59.93387, "lon": 30.32335, "minutes": 100, "check": 3500, "open": "12:00", "close": "01:00", "booking": true, "unit": "столик на террасе", "who": ["date", "friends"], "maxGroup": 10, "note": "панорама на Казанский собор", "photo": ""},
-  {"id": "primo", "pick": true, "kw": ["картинг","примо","primo"], "name": "Primo Картинг", "type": "active", "area": "Магнитогорская, 51", "lat": 59.93700, "lon": 30.43100, "minutes": 70, "check": 1600, "open": "12:00", "close": "23:00", "booking": true, "phone": "+7 (812) 448-84-48", "unit": "заезд", "who": ["friends", "date", "solo"], "maxGroup": 20, "note": "крытая трасса 400 м на берегу Охты", "photo": ""},
+  {"id": "primo", "pick": true, "kw": ["картинг", "примо", "primo", "бензин"], "name": "Primo Картинг", "type": "active", "area": "Магнитогорская, 51", "lat": 59.937, "lon": 30.431, "minutes": 70, "check": 1600, "open": "12:00", "close": "23:00", "booking": true, "phone": "+7 (812) 448-84-48", "unit": "заезд", "who": ["friends", "date", "solo"], "maxGroup": 20, "note": "крытая трасса 400 м на берегу Охты, бензиновые карты", "photo": ""},
   {"id": "blackstar", "pick": true, "kw": ["картинг","блэк стар","black star"], "name": "Black Star Картинг", "type": "active", "area": "Приморский пр., 72, ТРЦ «Питерлэнд»", "lat": 59.98180, "lon": 30.20970, "minutes": 70, "check": 2000, "open": "10:00", "close": "23:00", "booking": true, "unit": "заезд", "who": ["friends", "date", "solo"], "maxGroup": 20, "note": "электрокарты, трасса 620 м в четыре уровня", "photo": ""},
 
   /* ---------- список Андрея №2: мастер-классы, развлечения, активное, красивые места ---------- */
@@ -1661,6 +1662,12 @@ const KUSH_PLACES=[
   {"id": "solids", "pick": true, "kw": ["solids", "солидс", "оранжев"], "name": "Solids Billiard & Bar", "type": "billiard", "area": "Гатчинская улица, 16", "lat": 59.9604, "lon": 30.2988, "minutes": 120, "check": 1800, "open": "16:00", "close": "02:00", "booking": false, "walkin": true, "vip": 10000, "unit": "стол", "maxGroup": 12, "phone": "+7 (981) 988-88-20", "note": "модный оранжевый бар с американским пулом и своим двором, столы по живой очереди", "photo": ""},
   {"id": "alibi", "pick": true, "kw": ["алиби", "alibi", "русский бильярд", "русскую пирамид", "снукер"], "name": "Бильярдный клуб «Алиби»", "type": "billiard", "area": "Пионерская улица, 21 (ТЦ «Пионер»)", "lat": 59.9592, "lon": 30.2907, "minutes": 120, "check": 1200, "open": "10:00", "close": "06:00", "booking": true, "unit": "стол", "maxGroup": 10, "phone": "+7 (931) 298-77-78", "note": "русский бильярд, американский пул и снукер, открыт до 6 утра", "photo": ""},
   {"id": "lorenzo", "pick": true, "kw": ["медичи", "medici", "лоренцо"], "name": "Lorenzo Medici", "type": "food", "area": "набережная Фонтанки, 5/2", "lat": 59.9435, "lon": 30.341, "minutes": 90, "check": 2500, "open": "09:00", "close": "23:00", "booking": true, "unit": "столик", "maxGroup": 12, "phone": "+7 (812) 964-31-00", "note": "итальянский ресторан с панорамными окнами", "photo": ""},
+  {"id": "monterey", "kw": ["монтерей", "monterey"], "pick": true, "name": "Monterey", "type": "hookah", "also": ["bar", "fun"], "area": "Большой проспект П.С., 84", "lat": 59.9656, "lon": 30.3105, "minutes": 150, "check": 2000, "open": "00:00", "close": "00:00", "booking": true, "phone": "+7 (931) 283-47-34", "unit": "столик", "who": ["friends", "date", "solo"], "maxGroup": 12, "note": "бар-компьютерный клуб: кальян, PlayStation и игровые ПК, панорамные окна на Петроградку; по выходным диджей и бар; круглосуточно", "photo": ""},
+  {"id": "cocos", "kw": ["кокос", "cocos"], "pick": true, "name": "Cocos Lounge Bar", "type": "hookah", "also": ["bar"], "area": "Социалистическая улица, апарт-отель YES Marata", "lat": 59.9225, "lon": 30.3495, "minutes": 150, "check": 1700, "open": "12:00", "close": "02:00", "late": {"5": "04:00", "6": "04:00"}, "booking": true, "unit": "столик", "who": ["date", "friends", "solo"], "maxGroup": 10, "note": "уютный лаунж: дымный кальян, мягкие диваны, приглушённый свет и PlayStation, хорошо почилить вдвоём; часы уточняй", "photo": ""},
+  {"id": "tobe", "kw": ["to be", "to.be", "тубе", "ту би", "тоби"], "pick": true, "name": "To.be", "type": "hookah", "also": ["bar"], "area": "Чкаловский проспект, 50", "lat": 59.964, "lon": 30.293, "minutes": 150, "check": 1200, "open": "13:00", "close": "01:00", "late": {"5": "02:00", "6": "02:00"}, "booking": true, "unit": "столик", "who": ["friends", "date", "solo"], "maxGroup": 12, "note": "кальянная на Петроградке, куда удобно прийти большой компанией: кальяны, кухня, коктейли", "photo": ""},
+  {"id": "bor812", "kw": ["бор 812", "бор812", "б.о.р", "bor 812", "бор"], "pick": true, "name": "Б.О.Р. 812", "type": "relax", "area": "Солнечное, Приморское шоссе, 385", "lat": 60.148, "lon": 29.933, "far": true, "minutes": 240, "check": 10000, "open": "12:00", "close": "23:00", "booking": true, "phone": "+7 (921) 681-28-12", "unit": "баня", "who": ["friends", "date"], "maxGroup": 20, "note": "загородный банный клуб у залива: восемь бань на дровах, бассейн и ресторан; дорого, бронировать заранее, ехать около 40 минут", "photo": ""},
+  {"id": "brooms", "kw": ["брумс", "brooms", "сеновал"], "pick": true, "name": "Баня Brooms", "type": "relax", "area": "Лермонтовский проспект, 43/1, гостиница «Азимут»", "lat": 59.9118, "lon": 30.297, "minutes": 180, "check": 5000, "open": "10:00", "close": "23:00", "booking": true, "unit": "сеанс", "who": ["date", "friends", "solo"], "maxGroup": 4, "note": "современная русская баня в центре: парная из карельской сосны, купели, сеновал, авторские программы парения; часы уточняй", "photo": ""},
+  {"id": "pardlyapar", "kw": ["пар для пар", "пардляпар"], "pick": true, "name": "Пар для пар", "type": "relax", "area": "1-я Никитинская улица, 13", "lat": 60.0165, "lon": 30.305, "minutes": 210, "check": 6000, "open": "12:00", "close": "00:00", "booking": true, "unit": "баня", "who": ["date", "friends"], "maxGroup": 10, "note": "банный комплекс премиум-класса: бани по-чёрному и по-белому, чан на огне, пармейстер и ресторан русской кухни; часы уточняй", "photo": ""},
   {"id": "lavrakibistro", "kw": ["lavraki", "лаврак"], "pick": true, "name": "Lavraki bistro", "type": "food", "area": "Аптекарская набережная, 18с1", "lat": 59.9772, "lon": 30.3168, "minutes": 90, "check": 3500, "open": "12:00", "close": "00:00", "late": {"5": "01:00", "6": "01:00"}, "booking": true, "unit": "столик", "who": ["date", "friends", "solo"], "maxGroup": 10, "cu": ["fish", "european"], "note": "рыбное бистро Duo Band с видом на Большую Невку: средиземноморская кухня, свежая рыба и устрицы; часы уточняй", "photo": ""},
   {"id": "mops", "kw": ["мопс", "mops"], "pick": true, "name": "МОПС SPA", "type": "relax", "area": "Ковенский переулок, 5, 5 этаж", "lat": 59.9388, "lon": 30.3585, "minutes": 150, "check": 5000, "open": "10:00", "close": "22:00", "booking": true, "phone": "+7 (911) 928-44-50", "unit": "сеанс", "who": ["date", "friends", "solo"], "maxGroup": 4, "note": "азиатский day spa в центре: тайский массаж, баня, спа-программы на двоих", "photo": ""},
   {"id": "michele", "kw": ["мишель", "michele", "англетер", "астори"], "pick": true, "name": "Ресторан Michèle", "type": "food", "area": "Малая Морская, 24, при отеле «Англетер»", "lat": 59.9338, "lon": 30.3075, "minutes": 90, "check": 3500, "open": "10:00", "close": "00:00", "booking": true, "phone": "+7 (812) 317-00-40", "unit": "столик", "who": ["date", "friends", "solo"], "maxGroup": 10, "note": "от команды «Счастья»: окна на Исаакиевский собор, пиано-бар с живой музыкой по вечерам; часы уточняй", "photo": ""},
@@ -1675,8 +1682,8 @@ const KUSH_PLACES=[
 
 const LAT0=59.9390,LON0=30.3158,KX=55.6,KY=111.2;
 const ALL=["date","friends","solo"];
-const TYPES={food:"Еда",coffee:"Кофе и выпечка",culture:"Культура",walk:"Прогулка",view:"Вид на город",bar:"Бар",party:"Тусовка",cinema:"Кино",active:"Активный отдых",show:"Шоу и джаз",relax:"Релакс и SPA",cigar:"Сигары",workshop:"Мастер-класс",fun:"Развлечения",billiard:"Бильярд"};
-const ASK=["cinema","active","show","relax","cigar","workshop","fun","billiard"];
+const TYPES={food:"Еда",coffee:"Кофе и выпечка",culture:"Культура",walk:"Прогулка",view:"Вид на город",bar:"Бар",party:"Тусовка",cinema:"Кино",active:"Активный отдых",show:"Шоу и джаз",relax:"Релакс и SPA",cigar:"Сигары",hookah:"Кальянная",workshop:"Мастер-класс",fun:"Развлечения",billiard:"Бильярд"};
+const ASK=["cinema","active","show","relax","cigar","hookah","workshop","fun","billiard"];
 const QUICK=[
   {id:"food",label:"Поесть",types:["food","coffee"]},
   {id:"walk",label:"Погулять",types:["walk"]},
@@ -1702,7 +1709,7 @@ function openToday(p){
 function timesFor(p){let o=toH(p.open),c=toH(p.late&&p.late[TODAY.getDay()]||p.close);if(p.open===p.close){o=0;c=48}else{if(c<=o)c+=24;if(o<6){o+=24;c+=24}}return [o,c]}
 // кому подходит место на свидание: не для свиданий (шумно, «пацанский» формат) и особенно красивые
 const DATE_NO=new Set("cult rybalka karlfriedrich pifpaf zvonok intelligent sinichka krasivaya mamatata leps alibi gorilla energy myhistory chabrets".split(" "));
-const DATE_TOP=new Set("lavrakibistro mops michele michelecinema marsopolo marsovo italian park300 frantsuza mansarda schastye mio terrassa marivanna percorso jidai flori lorenzo siesta joli rimski aiki lahta isaac strelka bridges nhollandia letniy elagin tauride botanic europelobby poltory kabinet apotheke hidden dept57 darmagi konservator arhitektor serge vitya jfc butman jazzphil thehat jazzberry yusupov hermitage silentcinema artstudio8 moparfum jaimelab rewax alssoy insix xclinic voda greenflow katokflag maisonrouge freud sevcable pot1nevsky kolokolrub".split(" "));
+const DATE_TOP=new Set("cocos brooms pardlyapar bor812 lavrakibistro mops michele michelecinema marsopolo marsovo italian park300 frantsuza mansarda schastye mio terrassa marivanna percorso jidai flori lorenzo siesta joli rimski aiki lahta isaac strelka bridges nhollandia letniy elagin tauride botanic europelobby poltory kabinet apotheke hidden dept57 darmagi konservator arhitektor serge vitya jfc butman jazzphil thehat jazzberry yusupov hermitage silentcinema artstudio8 moparfum jaimelab rewax alssoy insix xclinic voda greenflow katokflag maisonrouge freud sevcable pot1nevsky kolokolrub".split(" "));
 const PLACES=KUSH_PLACES.map(p=>{
   let o=toH(p.open),c=toH(p.late&&p.late[TODAY.getDay()]||p.close);
   if(p.open===p.close){o=0;c=48}else{if(c<=o)c+=24;if(o<6){o+=24;c+=24}}
@@ -1757,10 +1764,11 @@ const KW={
   bar:["бар","коктейл","выпить","вино","винн","пиво","пива","настойк","джаз","посидеть","алкогол","виски","рюмочн","рюмк","пивн"],
   party:["тусов","тусн","клуб","танц","движ","караоке","вечерин","рейв","оторв","до утра","спеть","петь","диджей","потанцевать"],
   cinema:["кино","фильм","кинотеатр","сеанс","премьер","автокино","кинопарк"],
-  active:["картинг","падел","теннис","каток","коньк","лыж","сноуборд","горнолыж","спорт","актив","адреналин","покатат","игора","охта парк","охтапарк","поиграть","аэротруб","полет","полёт","полетать","скалодром","скалолаз","боулдер","верёвоч","веревоч","экстрим","лазать","батут","подвигат","размят","физическ"],
+  active:["картинг","падел","теннис","каток","коньк","лыж","сноуборд","горнолыж","спорт","актив","адреналин","покатат","игора","охта парк","охтапарк","аэротруб","полет","полёт","полетать","скалодром","скалолаз","боулдер","верёвоч","веревоч","экстрим","лазать","батут","подвигат","размят","физическ"],
   show:["шоу","кабаре","джаз","концерт","живая музык","живой музык","представлен","мюзикл"],
   relax:["бассейн","поплава","плават","спа","spa","релакс","расслаб","терм","сауна","сауну","саун","баня","бани","баню","бань","попарит","париться","парилк","хаммам","массаж","клиник","восстанов","перезагруз"],
-  cigar:["сигар","покурить","курить","курим","курю","покурим"],
+  cigar:["сигар","сигары"],
+  hookah:["кальян","кальик","калик","покурить","курить","курим","покурим","плейстейшн","плэйстейшн","playstation","приставк","ps5","пс5","поиграть в пк","компьютерн","лаунж","lounge"],
   workshop:["мастер-класс","мастер класс","мастеркласс","своими руками","гончар","керамик","лепк","свеч","парфюм","духи","бенто","торт","тафтинг","смол","флорариум","линогравюр","проявк","плёнк","пленк","творч","что-то создать","что-то сделать","сделать вместе","создать вместе","мороженое"],
   billiard:["бильярд"," пул "," пул,"," пул."," пулом"," пула "," в пул","снукер","пирамид"," кий"," кием","шары погонять","погонять шары","покатать шары"],
   fun:["повесел","весело","интерактив","иллюзи","автомат","фокус","магии","магия","необычн","аркад","поприкалыва","посмеяться"]
@@ -1854,7 +1862,7 @@ const DISHES={
  insix:["авторский массаж в шесть рук"]
 };
 const dishesOf=p=>p&&DISHES[p.id]||null;
-const checkLabel=p=>LT(p).some(t=>["food","bar","party","coffee","cigar","billiard","show"].includes(t))?"Средний чек":"Стоимость";
+const checkLabel=p=>LT(p).some(t=>["food","bar","party","coffee","cigar","hookah","billiard","show"].includes(t))?"Средний чек":"Стоимость";
 const checkTxt=p=>p.check>0?"≈ "+fmtNum(p.check)+" ₽ на человека":"бесплатно";
 const CHAINS={
   kido:{name:"КИDO",ids:["kidosuv","kidozel"]},
@@ -1887,7 +1895,7 @@ function localParse(text,quick){
   {// слово из описания места, которое не общее (не «пиво», «итальянская кухня», «рюмочная») и подходит одному-двум местам, — это название
     const VOC=[...Object.values(KW).flat(),...Object.values(CU_KW).flat(),...Object.values(FEAT_KW).flat()].map(w=>w.trim()).filter(w=>w.length>=3);
     const gen=k=>!k.includes(" ")&&VOC.some(w=>w.startsWith(k)||k.startsWith(w)&&w.length>=4||k.startsWith(w)&&w.length>=3&&k.length<=w.length+2);
-    const words=new Set();PLACES.forEach(p=>{const nm=p.name.toLowerCase().replace(/ё/g,"е");(p.kw||[]).forEach(k=>{if(low.includes(k)&&(!gen(k.trim())||k.length>=5&&nm.includes(k.trim())))words.add(k)})});
+    const words=new Set();PLACES.forEach(p=>{const nm=p.name.toLowerCase().replace(/ё/g,"е");(p.kw||[]).forEach(k=>{if(low.includes(k)&&(!gen(k.trim())||k.length>=5&&nm.includes(k.trim())&&PLACES.filter(q=>q.name.toLowerCase().replace(/ё/g,"е").includes(k.trim())).length===1))words.add(k)})});
     words.forEach(k=>{const ps=PLACES.filter(p=>(p.kw||[]).includes(k)),seen=new Set(ps.map(p=>p.chain||p.id));if(seen.size<=2){const got=new Set();ps.forEach(p=>{const b=p.chain||p.id;if(!got.has(b)){got.add(b);named.add(p.id)}})}})}
   if(/спокойн|тих|без шума|уютн/.test(low))avoid.add("party");
   if(/романт/.test(low)){like.add("view")}
@@ -1963,10 +1971,10 @@ async function interpret(text,quick){
 Внимательно прочитай текст целиком: что именно, в каком порядке и в каком формате хочет человек.
 feat: формат, если человек его назвал: jazz (джаз, блюз), live (живая музыка, концерт), karaoke, roof (на крыше), dance (потанцевать), wine, cocktail. «Бар с джазом» — это feat jazz, обычный коктейльный бар не подходит.
 order: типы мест в том порядке, в котором человек хочет их посетить, если он говорит «сначала… потом…». Например «сначала погулять, потом бар с джазом» → ["walk","bar"]. Если порядок не важен — пустой список.
-like и avoid: типы мест из списка food, coffee, walk, culture, view, bar, party, cinema, active, show, relax, cigar, workshop, fun, billiard.
+like и avoid: типы мест из списка food, coffee, walk, culture, view, bar, party, cinema, active, show, relax, cigar, hookah, workshop, fun, billiard.
 billiard = бильярд: американский пул, русская пирамида, снукер.
-party = клубы, караоке, тусовки. cinema = кино. active = картинг, падел, каток, горные лыжи (Игора и Охта Парк за городом). show = кабаре-шоу и джаз-концерты. relax = бассейн, термы, SPA, клиника. workshop = мастер-классы (гончарка, бенто-торты, свечи, парфюм, тафтинг, смола). fun = интерактивные музеи и развлечения (иллюзии, советские автоматы, магия). cigar = сигары, ставь ТОЛЬКО если человек сам написал про сигары или «покурить».
-Типы cinema, active, show, relax, cigar, workshop, fun, billiard ставь в like только если человек о них явно пишет.
+party = клубы, караоке, тусовки. hookah = кальянные и лаунжи, в том числе с PlayStation и ПК. cinema = кино. active = картинг, падел, каток, горные лыжи (Игора и Охта Парк за городом). show = кабаре-шоу и джаз-концерты. relax = бассейн, термы, SPA, клиника. workshop = мастер-классы (гончарка, бенто-торты, свечи, парфюм, тафтинг, смола). fun = интерактивные музеи и развлечения (иллюзии, советские автоматы, магия). cigar = сигары, ставь ТОЛЬКО если человек сам написал про сигары или «покурить».
+Типы cinema, active, show, relax, cigar, hookah, workshop, fun, billiard ставь в like только если человек о них явно пишет.
 include и exclude: id мест из списка ниже, только если человек явно назвал место или очень похожее.
 cheap: true, если человек просит подешевле. lux: true, если просит дорогие, статусные места.
 cuisine: какую кухню человек хочет, cuisineAvoid: какую не хочет. Только из списка: jp (японская, суши, роллы), cn (китайская), asian (азиатская в целом), georgian, italian, russian, meat (мясо, стейки, бургеры), fish (рыба, морепродукты), east (плов, восточная), european, german, dessert. Если просит суши или роллы, ставь jp и asian. Не подменяй кухню: просит азиатскую — не предлагай грузинскую.
@@ -2080,7 +2088,7 @@ async function interpretEdit(text){
   const r=state.res?state.res.route:[];
   const prompt=`Ты правишь маршрут по Санкт-Петербургу по просьбе человека. Верни ТОЛЬКО JSON:
 {"like":[],"avoid":[],"include":[],"exclude":[],"cuisine":[],"cuisineAvoid":[],"cheap":false,"lux":false,"compact":false,"fresh":false,"replace":false,"maxStops":null,"hours":null,"start":null}
-like/avoid: типы food, coffee, walk, culture, view, bar, party, cinema, active, show, relax, cigar, workshop, fun, billiard, которые надо добавить или убрать вообще.
+like/avoid: типы food, coffee, walk, culture, view, bar, party, cinema, active, show, relax, cigar, hookah, workshop, fun, billiard, которые надо добавить или убрать вообще.
 exclude: id мест из ТЕКУЩЕГО маршрута, которые человек просит убрать или заменить («убери второе место», «замени ресторан», «замени последнюю» — клади id этого места). Остальные места человек оставляет, их не трогай.
 replace: true, если место надо заменить другим (количество мест сохраняется), false — если просто убрать.
 include: id мест из списка, только если человек назвал конкретное место.
@@ -2343,6 +2351,7 @@ const ICON={
   billiard:'<circle cx="176" cy="98" r="26"/><circle cx="176" cy="98" r="10"/><circle cx="232" cy="78" r="18"/><path d="M122 140l170-110"/>',
   fun:'<rect x="138" y="94" width="124" height="40" rx="12"/><path d="M200 94V60"/><circle cx="200" cy="48" r="12"/><circle cx="236" cy="114" r="6"/><path d="M160 114h20M170 104v20"/>',
   cigar:'<rect x="128" y="96" width="132" height="20" rx="10"/><path d="M234 96v20"/><circle cx="268" cy="106" r="4"/><path d="M270 90c-10-12 10-18 0-30M284 92c-8-10 8-16 0-26"/>',
+  hookah:'<path d="M190 70v40"/><ellipse cx="190" cy="66" rx="18" ry="8"/><path d="M172 110h36l-6 40h-24z"/><ellipse cx="190" cy="170" rx="34" ry="22"/><path d="M216 160c30 0 40 20 70 14"/>',
   party:'<circle cx="200" cy="54" r="22"/><path d="M178 54h44M200 32v44M184 38l32 32M216 38l-32 32M200 10v22"/><path d="M146 132v-18M162 132v-30M178 132v-12M194 132v-36M210 132v-22M226 132v-32M242 132v-16M258 132v-26"/>'
 };
 const SKY='M0 180V158h34v-8h26v8h20v-14h22v14h16v-22l5-34 5 34v22h28v-9h12a24 24 0 0 1 48 0h12v9h34v-12h24v12h18v-50l3-20 3 20v50h28v-16h26v16h20v-9h36V180Z';

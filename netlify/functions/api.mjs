@@ -115,7 +115,7 @@ async function onBooking(body) {
     const body2 =
       `<b><i>${esc(cut(it.name, 60))}</i></b>\n` +
       `${esc(cut(it.area, 80))}\n` +
-      `<b>Бронь на ${esc(cut(it.time, 10))}</b>, ${n} чел., на имя ${esc(cut(u.name || "гость", 40))}\n` +
+      `<b>Бронь на ${esc(cut(it.time, 10))}</b>, ${esc(cut(f.dateText || "Сегодня", 30)).toLowerCase()}, ${n} чел., на имя ${esc(cut(u.name || "гость", 40))}\n` +
       // телефон отдельной строкой без скобок: Telegram сам сделает его кнопкой вызова
       (phone ? esc(phone.replace(/[^\d+]/g, "")) : `Телефона в базе нет`);
     await tg("sendMessage", {
@@ -269,20 +269,40 @@ async function onWebhook(req, body) {
       const done = act === "ok";
       const lines = cq.message && cq.message.text ? cq.message.text.split("\n") : [];
       const title = lines[0] || "место";
-      const tm = (/Бронь на (\d{1,2}:\d{2})/.exec(lines.join("\n")) || [])[1] || "";
+      const all = lines.join("\n");
+      const tm = (/Бронь на (\d{1,2}:\d{2})/.exec(all) || [])[1] || "";
+      const bl = lines.find((l) => l.startsWith("Бронь на")) || "";
+      const parts = bl.split(",").map((x) => x.trim());
+      const day = parts.length >= 4 ? parts[1] : "сегодня";
+      const ppl = (/(\d+) чел/.exec(bl) || [])[1] || "";
+      const nameFor = (/на имя (.+)$/.exec(bl) || [])[1] || "";
+      const area = lines[1] && !lines[1].startsWith("Бронь") ? lines[1] : "";
       const place = `<b><i>${esc(title)}</i></b>` + (tm ? ` — <b>${esc(tm)}</b>` : "");
+      const guests = (k) => { const x = Number(k) % 100, y = x % 10; return k + " " + (x > 10 && x < 20 ? "гостей" : y === 1 ? "гость" : y >= 2 && y <= 4 ? "гостя" : "гостей"); };
+      const pretty =
+        `✨ <b>Бронь подтверждена!</b> ✨\n\n` +
+        `📍 <b><i>${esc(title)}</i></b>\n` +
+        (area ? `<i>${esc(area)}</i>\n` : "") +
+        `\n🗓 <b>${esc(day.charAt(0).toUpperCase() + day.slice(1))}</b>` + (tm ? `   🕖 <b>${esc(tm)}</b>` : "") + `\n` +
+        (ppl ? `👥 ${guests(ppl)}` + (nameFor ? ` · на имя ${esc(nameFor)}` : "") + `\n` : "") +
+        `\nВас уже ждут — всё готово к вашему приходу 🥂\nОтличного вечера!\n\n<i>— твой KUSH</i>` +
+        (isDate ? `\n\n💐 <b>А цветы?</b> Букет к началу свидания — и вечер начнётся с улыбки. Florcat привезёт его прямо к месту встречи.` : "");
       await tg("answerCallbackQuery", { callback_query_id: cq.id, text: done ? "Отметил: забронировано" : "Отметил: не вышло" });
       if (cq.message) await tg("editMessageText", { chat_id: chat, message_id: cq.message.message_id, text: cq.message.text + "\n\n" + (done ? "✅ Забронировано" : "❌ Не получилось"), entities: cq.message.entities || undefined });
       if (gid && gid !== "0") {
+        // одно эмодзи отдельным сообщением Telegram показывает крупно и с анимацией
+        if (done) await tg("sendMessage", { chat_id: gid, text: isDate ? "💖" : "🎉" });
         await tg("sendMessage", {
           chat_id: gid,
           parse_mode: "HTML",
           text: done
-            ? `✅ <b>Бронь подтверждена</b>\n\n${place}\n\nЖдут тебя. Хорошего вечера!` +
-              (isDate ? `\n\n💐 А цветы? Букет к началу свидания — и вечер начнётся с улыбки. Florcat привезёт его прямо к месту встречи.` : "")
+            ? pretty
             : `😔 <b>Не получилось</b>\n\n${place}\nМест нет. Открой KUSH и выбери замену, это полминуты.`,
           reply_markup: done
-            ? (isDate ? { inline_keyboard: [[{ text: "💐 Выбрать букет во Florcat", url: "https://florcat.ru/?utm_source=kush&utm_medium=bot" }]] } : undefined)
+            ? { inline_keyboard: [
+                ...(isDate ? [[{ text: "💐 Выбрать букет во Florcat", url: "https://florcat.ru/?utm_source=kush&utm_medium=bot" }]] : []),
+                [{ text: "🗺 Открыть маршрут", web_app: { url: base } }],
+              ] }
             : { inline_keyboard: [[{ text: "Открыть KUSH", web_app: { url: base } }]] },
         });
       }
