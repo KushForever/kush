@@ -12,6 +12,24 @@ const TOKEN = process.env.TG_BOT_TOKEN || "";
 const ADMIN = process.env.TG_ADMIN_ID || "";
 const SECRET = process.env.TG_SECRET || "";
 const AI_KEY = process.env.ANTHROPIC_API_KEY || "";
+const YK_SHOP = process.env.YOOKASSA_SHOP_ID || "";
+const YK_KEY = process.env.YOOKASSA_SECRET_KEY || "";
+// Пакеты должны совпадать с TOKEN_PACKS в index.html: цену считает сервер, а не браузер
+const PACKS = { t5: { tokens: 5, price: 149 }, t20: { tokens: 20, price: 500 }, t50: { tokens: 50, price: 1090 }, t120: { tokens: 120, price: 2290 } };
+async function yk(path, method = "GET", body) {
+  const r = await fetch("https://api.yookassa.ru/v3" + path, {
+    method,
+    headers: {
+      Authorization: "Basic " + Buffer.from(YK_SHOP + ":" + YK_KEY).toString("base64"),
+      "Content-Type": "application/json",
+      "Idempotence-Key": crypto.randomUUID(),
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  let j = {};
+  try { j = await r.json(); } catch (_) {}
+  return { ok: r.ok, status: r.status, data: j };
+}
 const AI_MODEL = process.env.AI_MODEL || "claude-haiku-5-5";
 const API = (m) => `https://api.telegram.org/bot${TOKEN}/${m}`;
 
@@ -87,7 +105,7 @@ async function onRegister(body) {
 }
 
 // ---------- заявка на бронь ----------
-async function onBooking(body) {
+async function onBooking(body, base0 = "") {
   if ((process.env.BOT_BOOKING || "").toLowerCase() === "off") return json({ ok: false, off: true });
   const tgUser = checkInitData(body.initData);
   const u = body.user || {};
@@ -110,6 +128,7 @@ async function onBooking(body) {
 
   const gid = tgUser ? String(tgUser.id) : "0";
   const dt = f.who === "date" ? ":d" : "";
+  const routeCode = /^[\w.~:-]{5,600}$/.test(String(body.route || "")) ? String(body.route) : "";
   for (const it of items) {
     const phone = cut(it.phone, 24);
     const body2 =
@@ -117,7 +136,8 @@ async function onBooking(body) {
       `${esc(cut(it.area, 80))}\n` +
       `<b>Бронь на ${esc(cut(it.time, 10))}</b>, ${esc(cut(f.dateText || "Сегодня", 30)).toLowerCase()}, ${n} чел., на имя ${esc(cut(u.name || "гость", 40))}\n` +
       // телефон отдельной строкой без скобок: Telegram сам сделает его кнопкой вызова
-      (phone ? esc(phone.replace(/[^\d+]/g, "")) : `Телефона в базе нет`);
+      (phone ? esc(phone.replace(/[^\d+]/g, "")) : `Телефона в базе нет`) +
+      (routeCode ? `\nМаршрут гостя: ${esc(base0 + "/?r=" + encodeURIComponent(routeCode))}` : "");
     await tg("sendMessage", {
       chat_id: ADMIN,
       text: body2,
@@ -277,6 +297,8 @@ async function onWebhook(req, body) {
       const ppl = (/(\d+) чел/.exec(bl) || [])[1] || "";
       const nameFor = (/на имя (.+)$/.exec(bl) || [])[1] || "";
       const area = lines[1] && !lines[1].startsWith("Бронь") ? lines[1] : "";
+      const rl = (/Маршрут гостя: (\S+)/.exec(all) || [])[1] || "";
+      const routeUrl = /^https:\/\/[^\s]+\?r=[\w.~%:-]+$/.test(rl) ? rl : base;
       const place = `<b><i>${esc(title)}</i></b>` + (tm ? ` — <b>${esc(tm)}</b>` : "");
       const guests = (k) => { const x = Number(k) % 100, y = x % 10; return k + " " + (x > 10 && x < 20 ? "гостей" : y === 1 ? "гость" : y >= 2 && y <= 4 ? "гостя" : "гостей"); };
       const pretty =
@@ -301,7 +323,7 @@ async function onWebhook(req, body) {
           reply_markup: done
             ? { inline_keyboard: [
                 ...(isDate ? [[{ text: "💐 Выбрать букет во Florcat", url: "https://florcat.ru/?utm_source=kush&utm_medium=bot" }]] : []),
-                [{ text: "🗺 Открыть маршрут", web_app: { url: base } }],
+                [{ text: "🗺 Открыть маршрут", web_app: { url: routeUrl } }],
               ] }
             : { inline_keyboard: [[{ text: "Открыть KUSH", web_app: { url: base } }]] },
         });
@@ -446,6 +468,7 @@ export default async function handler(req) {
       adminId: ADMIN ? "задан" : "НЕ ЗАДАН",
       secret: SECRET ? "задан" : "НЕ ЗАДАН",
       instagram: process.env.IG_USER_ID && process.env.IG_TOKEN ? "подключён" : "не подключён (ролики приходят в Telegram)",
+      payments: YK_SHOP && YK_KEY ? "ЮKassa подключена" : "не подключены (нет YOOKASSA_SHOP_ID и YOOKASSA_SECRET_KEY)",
     });
   }
   if (path === "/setup") return onSetup(url);
@@ -464,6 +487,27 @@ export default async function handler(req) {
     });
   }
 
+  // Проверка оплаты. Платёж создаётся двухстадийным: деньги только замораживаются,
+  // а списываются здесь, ровно один раз. Повторная проверка того же платежа токенов не даёт.
+  if (path === "/pay/check") {
+    if (!YK_SHOP || !YK_KEY) return json({ ok: false, error: "оплата не подключена" }, 503);
+    const id = (url.searchParams.get("id") || "").replace(/[^a-z0-9-]/gi, "").slice(0, 60);
+    if (!id) return json({ ok: false, error: "нет id" }, 400);
+    const g = await yk("/payments/" + id);
+    if (!g.ok) return json({ ok: false, error: "платёж не найден" }, 404);
+    const pay = g.data;
+    const tokens = Number(pay.metadata && pay.metadata.tokens) || 0;
+    if (pay.status === "pending") return json({ ok: false, pending: true });
+    if (pay.status === "canceled") return json({ ok: false, canceled: true });
+    if (pay.status === "succeeded") return json({ ok: false, used: true });
+    if (pay.status === "waiting_for_capture") {
+      const c = await yk("/payments/" + id + "/capture", "POST", { amount: pay.amount });
+      if (c.ok && c.data.status === "succeeded") return json({ ok: true, tokens });
+      return json({ ok: false, used: true });
+    }
+    return json({ ok: false, status: pay.status });
+  }
+
   if (req.method !== "POST") return json({ ok: false, error: "нужен POST" }, 405);
   let body = {};
   try {
@@ -476,9 +520,24 @@ export default async function handler(req) {
 
   if (path === "/tg") return onWebhook(req, body);
   if (path === "/ai") return onAI(req, body, url);
-  if (!TOKEN || !ADMIN) return json({ ok: false, error: "бот не настроен" }, 503);
+  if (path === "/pay") {
+    if (!YK_SHOP || !YK_KEY) return json({ ok: false, error: "оплата пока не подключена" }, 503);
+    const pk = PACKS[String(body.pack || "")];
+    if (!pk) return json({ ok: false, error: "нет такого пакета" }, 400);
+    const base = siteBase(req);
+    const r = await yk("/payments", "POST", {
+      amount: { value: pk.price.toFixed(2), currency: "RUB" },
+      capture: false,
+      confirmation: { type: "redirect", return_url: base + "/?paid=1" },
+      description: `KUSH: ${pk.tokens} броней`,
+      metadata: { pack: String(body.pack), tokens: pk.tokens },
+    });
+    if (!r.ok || !r.data.confirmation) return json({ ok: false, error: (r.data && r.data.description) || "ЮKassa не ответила" }, 502);
+    return json({ ok: true, id: r.data.id, url: r.data.confirmation.confirmation_url });
+  }  if (!TOKEN || !ADMIN) return json({ ok: false, error: "бот не настроен" }, 503);
   if (path === "/register") return onRegister(body);
-  if (path === "/booking") return onBooking(body);
+  if (path === "/booking") return onBooking(body, siteBase(req));
+
   if (path === "/support") return onSupport(body);
   return json({ ok: false, error: "не знаю такой адрес" }, 404);
 }

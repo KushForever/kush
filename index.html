@@ -269,6 +269,8 @@ h1,h2,h3{text-wrap:balance}
 .flowers[hidden]{display:none}
 .rflow{display:flex;align-items:center;gap:12px;margin:14px 0;padding:14px 16px;border:1px solid color-mix(in srgb,var(--neon) 40%,var(--line));border-radius:16px;background:var(--panel);color:inherit;text-decoration:none;font-size:15px;line-height:1.4}
 .rflow[hidden]{display:none}
+.paytoast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;z-index:99;background:var(--panel);border:1px solid var(--neon);color:inherit;padding:14px 18px;border-radius:14px;font-size:15px;transition:.35s;max-width:90vw;text-align:center}.paytoast.on{opacity:1;transform:translate(-50%,0)}
+.shareline{display:flex;justify-content:center;margin-top:10px}.shareline .link{font-size:14px}
 .overt{list-style:none;margin:6px 0;padding:12px 14px;border:1px solid #F5A524;border-radius:14px;background:color-mix(in srgb,#F5A524 10%,transparent);font-size:14px;line-height:1.45}.overt b{color:#F5A524}.rflow>span:first-child{font-size:24px}.rflow i{margin-left:auto;font-style:normal;color:var(--neon);font-size:20px}.rflow:hover{border-color:var(--neon)}
 .flowers{margin-top:14px;display:flex;flex-direction:column;gap:8px;border-color:color-mix(in srgb,var(--neon) 35%,var(--line))}
 .flowers .fl-ic{font-size:26px;line-height:1}.flowers b{font-size:17px}.flowers p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}.flowers .btn{margin-top:4px;text-align:center;justify-content:center}
@@ -1371,6 +1373,7 @@ body[data-screen="s-reg"] .foot-note .link,body[data-screen="s-home"] .foot-note
         <button class="btn" id="btnEdit">Изменить ответы</button>
         <button class="btn" id="btnRebuild">Другой вариант</button>
       </div>
+      <div class="shareline"><button class="link" type="button" id="btnShare">↗ Поделиться маршрутом</button></div>
     </div>
     <div class="alert" id="rAlert" role="status" hidden></div>
     <a class="rflow" id="rFlowers" hidden href="https://florcat.ru/?utm_source=kush&utm_medium=route" target="_blank" rel="noopener"><span aria-hidden="true">💐</span><span><b>Свидание — значит, цветы.</b> <span id="rFlowTxt">Florcat привезёт букет к месту встречи.</span></span><i aria-hidden="true">→</i></a>
@@ -1443,7 +1446,6 @@ body[data-screen="s-reg"] .foot-note .link,body[data-screen="s-home"] .foot-note
   </section>
 
   <footer class="foot-note">
-    <span>KUSH, демо-версия. Базу мест заполняем вручную, часы работы лучше перепроверить.</span>
     <button class="link" type="button" data-sup="chat">Поддержка</button>
   </footer>
 </div>
@@ -2955,6 +2957,7 @@ async function sendBooking(){
   return apiPost("/booking",{
     user:USER||{name:($("#bookName").value||"").trim()},
     form:{who:state.form.who,n:state.form.n,startText:hm(state.res.startMin),dateText:dateShort()},
+    route:routeCode(state.res),
     items
   });
 }
@@ -3328,7 +3331,7 @@ const TOKEN_PACKS=[
   {id:"t120",tokens:120,price:2290}
 ];
 const START_TOKENS=0;          // сколько токенов дарим при регистрации
-const PAY_MODE="demo";         // "demo" — оплата не подключена, токены начисляются для теста
+const PAY_MODE="live";         // оплата через ЮKassa (ключи — в Netlify: YOOKASSA_SHOP_ID и YOOKASSA_SECRET_KEY)
 const LOCK_ICON='<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" fill="currentColor"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>';
 const COIN_ICON='<svg class="coin-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="#B6FF2E" stroke-width="2"/><path d="M9.5 7.5v9M9.5 12l4.5-4.5M10.5 11l4 5.5" fill="none" stroke="#B6FF2E" stroke-width="2" stroke-linecap="round"/></svg>';
 const TOK={
@@ -3359,7 +3362,7 @@ function renderPay(){
     '<span class="n">'+p.tokens+'</span><span class="u">'+tokWord(p.tokens)+'</span><span class="pr">'+p.price.toLocaleString("ru-RU")+' ₽</span>'+
     '<span class="per">'+(Math.round(p.price/p.tokens*10)/10).toLocaleString("ru-RU")+' ₽ за бронь</span>'+
     '<button class="btn'+(p.hit?' neon':'')+'" type="button" data-pack="'+p.id+'">Купить</button></div>').join("");
-  $("#payDemo").innerHTML=PAY_MODE==="demo"?'<b>Тестовый режим.</b> Оплата ещё не подключена: кнопка «Купить» начисляет токены без списания денег, чтобы проверить работу бота. Настоящую оплату подключим через платёжный сервис (ЮKassa или CloudPayments) с сервером, который хранит баланс.':'';
+  $("#payDemo").innerHTML='Оплата картой или СБП через ЮKassa. Если бронь не получится, токен вернётся.';
 }
 function openPay(){
   renderPay();const d=$("#payDlg");
@@ -3368,10 +3371,26 @@ function openPay(){
 $("#packs").addEventListener("click",e=>{
   const b=e.target.closest("[data-pack]");if(!b)return;
   const p=TOKEN_PACKS.find(x=>x.id===b.dataset.pack);if(!p)return;
-  if(PAY_MODE==="demo"){TOK.add(p.tokens);b.textContent="+"+p.tokens+" начислено";
-    if(state.screen==="s-book"&&!state.running){let left=TOK.get()-state.calls.filter(c=>c.mode==="bot"&&c.status==="queue").length;state.calls.forEach(c=>{if(c.status==="queue"&&c.mode==="self"&&left>0){c.mode="bot";left--}});renderCalls()}
-    setTimeout(()=>{const d=$("#payDlg");try{d.close()}catch(_){d.removeAttribute("open")}},700)}
+  b.disabled=true;const old=b.textContent;b.textContent="Открываю оплату…";
+  apiPost("/pay",{pack:p.id}).then(r=>{
+    if(r&&r.ok&&r.url){store.set("kush_pay_pending",{id:r.id,key:TOK.key(),tokens:p.tokens,at:Date.now()});
+      location.href=r.url;return}
+    b.disabled=false;b.textContent=old;
+    $("#payDemo").innerHTML='<b>Оплата пока не работает.</b> Мы её подключаем, попробуй чуть позже или напиши в поддержку.';
+  });
 });
+// вернулись с оплаты: проверяем платёж и начисляем токены ровно один раз
+async function checkPayment(tries){
+  const pend=store.get("kush_pay_pending");if(!pend||!pend.id)return;
+  let j=null;try{const r=await fetch("/api/pay/check?id="+encodeURIComponent(pend.id));j=await r.json()}catch(_){}
+  if(j&&j.ok){const cur=store.get(pend.key);store.set(pend.key,Math.max(0,(typeof cur==="number"?cur:0)+(j.tokens||pend.tokens)));store.del("kush_pay_pending");showTokens();
+    toastBig("Оплата прошла: +"+(j.tokens||pend.tokens)+" "+tokWord(j.tokens||pend.tokens)+" 🎉");return}
+  if(j&&(j.canceled||j.used)){store.del("kush_pay_pending");if(j.canceled)toastBig("Оплата отменена, деньги не списаны");return}
+  if(j&&j.pending&&tries<6)setTimeout(()=>checkPayment(tries+1),4000);
+  else if(Date.now()-(pend.at||0)>3*864e5)store.del("kush_pay_pending");
+}
+function toastBig(msg){const el=document.createElement("div");el.className="paytoast";el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.classList.add("on"),20);setTimeout(()=>{el.classList.remove("on");setTimeout(()=>el.remove(),400)},4200)}
+checkPayment(0);
 $("#tokChip").addEventListener("click",openPay);
 TOK.init();showTokens();
 try{renderHub()}catch(_){}
@@ -3465,7 +3484,40 @@ function drawMap(route){
 
 
 
+/* ---------- маршрут по ссылке: ?r=дата~повод~люди~транспорт~часы~место.минуты_место.минуты ---------- */
+function routeCode(res){
+  if(!res||!res.route||!res.route.length)return "";
+  const f=state.form,d=TODAY,iso=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  return [iso,f.who,f.n,f.move||"walk",f.hours,res.route.map(x=>x.p.id+"."+x.arrive).join("_")].join("~");
+}
+function routeLink(res){return location.origin+"/?r="+encodeURIComponent(routeCode(res))}
+function openShared(code){
+  try{
+    const [iso,who,n,move,hours,list]=String(code).split("~");if(!list)return false;
+    const [y,m,dd]=iso.split("-").map(Number),day=new Date(y,m-1,dd,12),base=new Date(REAL_TODAY);base.setHours(12,0,0,0);
+    const off=Math.round((day-base)/864e5);setDate(off<0?0:off);
+    Object.assign(state.form,{who:["date","friends","solo"].includes(who)?who:"friends",n:Math.max(1,Math.min(50,+n||2)),move:["walk","metro","bus","car"].includes(move)?move:"walk",hours:+hours||3});
+    const route=[];let prev=null;
+    for(const it of list.split("_")){const [id,a]=it.split(".");const p=PLACES.find(z=>z.id===id);if(!p||!(+a>=0))continue;
+      const leg=prev?travel(prev,p):{mode:"start",min:0,km:0},arrive=+a;route.push({p,leg,arrive,end:arrive+dur(p),wait:0,cost:(p.check||0)*state.form.n});prev=p}
+    if(!route.length)return false;
+    state.prefs=Object.assign(localParse("",[]),{summary:""});state.seed=1;
+    state.res={route,startMin:route[0].arrive,endMin:route[route.length-1].end,shared:true};
+    state.form.start=(route[0].arrive/60)%24;
+    renderRoute(false);go("s-route");
+    const bb=$("#rBuddy");if(bb)bb.hidden=true;
+    if(!USER)["#tokChip","#userChip"].forEach(q=>{const el=$(q);if(el)el.style.display="none"});
+    return true;
+  }catch(_){return false}
+}
+$("#btnShare").addEventListener("click",async()=>{
+  const url=routeLink(state.res),text="Наш план на вечер в KUSH: "+state.res.route.map(x=>x.p.name).join(" → ");
+  try{if(TG&&TG.openTelegramLink&&TG.initData){TG.openTelegramLink("https://t.me/share/url?url="+encodeURIComponent(url)+"&text="+encodeURIComponent(text));return}}catch(_){}
+  try{if(navigator.share){await navigator.share({title:"Маршрут KUSH",text,url});return}}catch(_){return}
+  try{await navigator.clipboard.writeText(url);toastBig("Ссылка на маршрут скопирована")}catch(_){prompt("Ссылка на маршрут",url)}
+});
 renderStep(0);
+{const rq=new URLSearchParams(location.search).get("r");if(rq)setTimeout(()=>{if(openShared(rq)){try{history.replaceState(null,"",location.pathname)}catch(_){}}},0)}
 })();
 </script>
 </body>
