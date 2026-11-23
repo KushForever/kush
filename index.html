@@ -3362,7 +3362,7 @@ function renderPay(){
     '<span class="n">'+p.tokens+'</span><span class="u">'+tokWord(p.tokens)+'</span><span class="pr">'+p.price.toLocaleString("ru-RU")+' ₽</span>'+
     '<span class="per">'+(Math.round(p.price/p.tokens*10)/10).toLocaleString("ru-RU")+' ₽ за бронь</span>'+
     '<button class="btn'+(p.hit?' neon':'')+'" type="button" data-pack="'+p.id+'">Купить</button></div>').join("");
-  $("#payDemo").innerHTML='Оплата картой или СБП через ЮKassa. Если бронь не получится, токен вернётся.';
+  $("#payDemo").innerHTML='Оплата картой или SberPay через ЮKassa. Если бронь не получится, токен вернётся.';
 }
 function openPay(){
   renderPay();const d=$("#payDlg");
